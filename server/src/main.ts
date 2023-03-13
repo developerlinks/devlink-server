@@ -1,11 +1,18 @@
+import 'module-alias/register';
 import { NestFactory } from '@nestjs/core';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app.module';
+import { setupApp } from './setup';
+import { getServerConfig } from '../ormconfig';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+  const config = getServerConfig();
 
-  await app.listen(3000);
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+  });
+  setupApp(app);
+  const port = typeof config['APP_PORT'] === 'string' ? parseInt(config['APP_PORT']) : 13000;
+  await app.listen(port);
+  await app.init();
 }
 bootstrap();
