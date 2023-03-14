@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Profile } from './profile.entity';
 import { Logs } from 'src/logs/logs.entity';
+import { Materials } from 'src/materials/entities/material.entity';
 
 @Entity()
 export class User {
@@ -36,4 +37,8 @@ export class User {
 
   @OneToOne(() => Profile, profile => profile.user, { cascade: true })
   profile: Profile;
+
+  @ManyToMany(() => Materials, material => material.user, { cascade: true })
+  @JoinTable({ name: 'users_materials' })
+  materials: Materials[];
 }

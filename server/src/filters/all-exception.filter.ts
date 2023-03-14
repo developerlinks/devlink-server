@@ -26,17 +26,18 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     const msg: unknown = exception['response'] || 'Internal Server Error';
     const responseBody = {
-      headers: request.headers,
-      query: request.query,
+      // headers: request.headers,
+      // query: request.query,
+      status: httpStatus,
       body: request.body,
       params: request.params,
       timestamp: new Date().toISOString(),
-      ip: requestIp.getClientIp(request),
+      // ip: requestIp.getClientIp(request),
       exceptioin: exception['name'],
-      error: msg,
+      message: msg,
     };
 
-    this.logger.error('[toimc]', responseBody);
+    this.logger.error('[devLink]', responseBody);
     httpAdapter.reply(response, responseBody, httpStatus);
   }
 }

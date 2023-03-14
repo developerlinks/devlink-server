@@ -12,6 +12,7 @@ import {
   ParseIntPipe,
   Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -20,8 +21,10 @@ import { User } from './entities/user.entity';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { getUserDto } from './dto/get-user.dto';
 import { CreateUserPipe } from './pipes/create-user.pipe';
+import { JwtGuard } from 'src/guards/jwt.guard';
 
 @Controller('user')
+// @UseGuards(JwtGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -34,7 +37,7 @@ export class UserController {
     return this.userService.findProfile(id);
   }
 
-  @Post('adduser')
+  @Post('/adduser')
   addUser(@Body(CreateUserPipe) dto: CreateUserDto) {
     const user = dto as User;
     return this.userService.create(user);
@@ -50,8 +53,8 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
-  @Patch('update/:id')
-  updateUser(@Body() dto: UpdateUserDto, @Param('id', ParseIntPipe) id: number, @Req() req) {
+  @Patch('/:id')
+  updateUser(@Body() dto: any, @Param('id', ParseIntPipe) id: number, @Req() req): any {
     // if (id === parseInt(req.user?.userId)) {
     const user = dto as User;
     return this.userService.update(id, user);

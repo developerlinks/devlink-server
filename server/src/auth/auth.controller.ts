@@ -18,10 +18,6 @@ import { SigninUserDto } from './dto/signin-user.dto';
 @UseFilters(new TypeormFilter())
 export class AuthController {
   constructor(private authService: AuthService) {}
-  @Get()
-  getHello(): string {
-    return 'Hello World!';
-  }
 
   @Post('/signin')
   async signin(@Body() dto: SigninUserDto) {

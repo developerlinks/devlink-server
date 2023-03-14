@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
+import { TransformInterceptor } from './interceptors/transform.interceptor';
 
 export const setupApp = (app: INestApplication) => {
   const config = getServerConfig();
@@ -16,7 +17,7 @@ export const setupApp = (app: INestApplication) => {
   // // 全局Filter只能有一个
   const logger = new Logger();
   app.useGlobalFilters(new AllExceptionFilter(logger, httpAdapter));
-
+  app.useGlobalInterceptors(new TransformInterceptor());
   // 全局拦截器
   app.useGlobalPipes(
     new ValidationPipe({

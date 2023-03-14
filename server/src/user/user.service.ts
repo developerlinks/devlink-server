@@ -91,7 +91,6 @@ export class UserService {
   async remove(id: number) {
     // return this.userRepository.delete(id);
     const user = await this.findOne(id);
-    console.info('user-----', user);
     return this.userRepository.remove(user);
   }
 
