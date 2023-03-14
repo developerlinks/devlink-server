@@ -1,6 +1,6 @@
 {
   "name": "@devlink/cli-init",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha.0",
   "description": "> TODO: description",
   "author": "zhangbaolin <zhangbaolin.work@foxmail.com>",
   "homepage": "https://github.com/developerlinks/devlink#readme",
@@ -27,7 +27,7 @@
     "url": "https://github.com/developerlinks/devlink/issues"
   },
   "dependencies": {
-    "@devlink/cli-utils": "^0.0.1"
+    "@devlink/cli-utils": "^0.0.2-alpha.0"
   },
   "devDependencies": {
     "mocha": "^10.0.0"
