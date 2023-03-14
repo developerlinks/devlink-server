@@ -2,9 +2,10 @@
 const axios = require('axios');
 const urlJoin = require('url-join');
 const semver = require('semver');
+const log  = require('./log');
 
 // 获取 registry 信息
-function getNpmRegistry(isOriginal = false) {
+function getNpmRegistry(isOriginal = true) {
   return isOriginal ? 'https://registry.npmjs.org' : 'https://registry.npm.taobao.org';
 }
 
@@ -12,12 +13,14 @@ function getNpmRegistry(isOriginal = false) {
 function getNpmInfo(npm, registry) {
   const register = registry || getNpmRegistry();
   const url = urlJoin(register, npm);
+  log.verbose('getNpmInfo',url)
   return axios.get(url).then(function (response) {
     try {
       if (response.status === 200) {
         return response.data;
       }
     } catch (error) {
+      log.verbose('error',error)
       return Promise.reject(error);
     }
   });
