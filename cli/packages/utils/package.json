@@ -1,0 +1,42 @@
+{
+  "name": "@devlink/cli-utils",
+  "version": "0.0.1",
+  "description": "> TODO: description",
+  "author": "zhangbaolin <zhangbaolin.work@foxmail.com>",
+  "homepage": "https://github.com/developerlinks/devlink#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/developerlinks/devlink.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/developerlinks/devlink/issues"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cli-spinner": "^0.2.10",
+    "fs-extra": "^10.1.0",
+    "inquirer": "^6.1.0",
+    "npminstall": "^6.5.0",
+    "npmlog": "^6.0.2",
+    "semver": "^7.3.7",
+    "url-join": "^4.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^10.0.0"
+  }
+}
