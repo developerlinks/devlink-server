@@ -1,0 +1,42 @@
+.materialInfoBox {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.materialInfoBox .navbar {
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+  top: 0;
+}
+.materialInfoBox .materialInfoContainer {
+  gap: 10px;
+  margin-top: 60px;
+  width: 70%;
+  padding: 30px;
+}
+.materialInfoBox .materialInfoContainer .materialHeader {
+  display: flex;
+  width: 100%;
+  justify-content: start;
+  margin: 10px 0;
+}
+.materialInfoBox .materialInfoContainer .materialHeader .materialInfo {
+  display: flex;
+  gap: 10px;
+}
+.materialInfoBox .materialInfoContainer .materialHeader .materialInfo .materialData .materialTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.materialInfoBox .materialInfoContainer .materialHeader .materialInfo .materialData .materialTitle .title {
+  font-size: 18px;
+  font-weight: 600;
+}
+.materialInfoBox .materialInfoContainer .materialHeader .materialInfo .materialData .materialUserData {
+  display: flex;
+  gap: 10px;
+  font-size: 16px;
+  color: #86909c;
+}

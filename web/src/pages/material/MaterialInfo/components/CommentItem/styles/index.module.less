@@ -1,0 +1,51 @@
+.materialInfoBox {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  .navbar {
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    top: 0;
+  }
+
+  .materialInfoContainer {
+    display: flex;
+    gap: 10px;
+    margin-top: 60px;
+    width: 70%;
+    padding: 30px;
+
+    .materialHeader {
+      display: flex;
+      width: 100%;
+      justify-content: start;
+
+      .materialInfo {
+        display: flex;
+        gap: 10px;
+        .materialData {
+
+          .materialTitle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            .title {
+              font-size: 18px;
+              font-weight: 600;
+            }
+            .tag {
+            }
+          }
+
+          .materialUserData {
+            display: flex;
+            gap: 10px;
+            font-size: 16px;
+            color: rgb(134, 144, 156);
+          }
+        }
+      }
+    }
+  }
+}
