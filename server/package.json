@@ -1,8 +1,8 @@
 {
-  "name": "amo",
+  "name": "devlink",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "developer links",
+  "author": "bowling",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.3.9",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.9",
@@ -28,6 +29,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.3.9",
+    "@nestjs/swagger": "^6.2.1",
     "@nestjs/typeorm": "^9.0.1",
     "@types/passport-jwt": "^3.0.8",
     "argon2": "^0.30.3",
@@ -42,14 +44,17 @@
     "module-alias": "^2.2.2",
     "mysql2": "^2.3.3",
     "nest-winston": "^1.8.0",
+    "nodemailer": "^6.9.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
+    "path": "^0.12.7",
     "reflect-metadata": "^0.1.13",
     "request-ip": "^3.3.0",
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.0",
     "transports": "link:winston/lib/winston/transports",
     "typeorm": "^0.3.12",
+    "uuid": "^9.0.0",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^4.7.1"
   },

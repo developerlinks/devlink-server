@@ -16,7 +16,7 @@ export function getEnv(env: string): Record<string, unknown> {
 
 export function getServerConfig() {
   const defaultConfig = getEnv('.env');
-  const envConfig = getEnv(`.env.${process.env.NODE_ENV || 'development'}`);
+  const envConfig = getEnv(`.env.${process.env.NODE_ENV || 'development' || 'production'}`);
   // configService
   const config = { ...defaultConfig, ...envConfig };
   return config;
@@ -31,11 +31,10 @@ export function buildConnectionOptions() {
 
   const logFlag = config['LOG_ON'] === 'true';
 
-  const entitiesDir =
-    process.env.NODE_ENV === 'test'
-      ? [__dirname + '/**/*.entity.ts']
-      : [__dirname + '/**/*.entity{.js,.ts}'];
-  console.info('config', config, defaultConfig);
+  const entitiesDir = [
+    __dirname + '/**/**/**/*.entity{.js,.ts}',
+    __dirname + '/**/**/*.entity{.js,.ts}',
+  ];
   return {
     type: config[ConfigEnum.DB_TYPE],
     host: config[ConfigEnum.DB_HOST],

@@ -1,5 +1,5 @@
 import { Global, Logger, LoggerService, Module } from '@nestjs/common';
-import { UserModule } from './user/user.module';
+import { UserModule } from './modules/user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as Joi from 'joi';
@@ -7,11 +7,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { connectionParams } from '../ormconfig';
 
-import { LogsModule } from './logs/logs.module';
-import { RolesModule } from './roles/roles.module';
-import { MenusModule } from './menus/menus.module';
+import { LogsModule } from './modules/logs/logs.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { MenusModule } from './modules/menus/menus.module';
 import { AuthModule } from './auth/auth.module';
-import { MaterialModule } from './materials/material.module';
+import { MaterialModule } from './modules/materials/material.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 

@@ -9,7 +9,8 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: devlink-db
+      MYSQL_ROOT_PASSWORD: bowling
     ports:
       - 3306:3306
 

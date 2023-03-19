@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
 import { TransformInterceptor } from './interceptors/transform.interceptor';
+import { UserService } from './modules/user/user.service';
 
 export const setupApp = (app: INestApplication) => {
   const config = getServerConfig();
@@ -36,4 +37,9 @@ export const setupApp = (app: INestApplication) => {
       max: 300, // limit each IP to 100 requests per windowMs
     }),
   );
+  const isProd = process.env.NODE_ENV === 'production';
+  if (!isProd) {
+    const adminAccountService = app.get(UserService);
+    adminAccountService.createAdminAccount();
+  }
 };

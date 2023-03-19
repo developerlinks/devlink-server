@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../auth.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../modules/user/user.service';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { User } from '../../user/user.entity';
+import { User } from '../../modules/user/user.entity';
 import { ForbiddenException } from '@nestjs/common';
 import * as argon2 from 'argon2';
 

@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { setupApp } from './setup';
 import { getServerConfig } from '../ormconfig';
+import { generateDocument } from './doc';
 
 async function bootstrap() {
   const config = getServerConfig();
@@ -14,6 +15,7 @@ async function bootstrap() {
     },
   });
   app.setGlobalPrefix('api');
+  generateDocument(app);
   setupApp(app);
   const port = typeof config['APP_PORT'] === 'string' ? parseInt(config['APP_PORT']) : 13000;
   await app.listen(port);

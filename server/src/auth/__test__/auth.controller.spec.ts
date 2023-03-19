@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
-import { User } from '../../user/user.entity';
-import { Roles } from '../../roles/roles.entity';
+import { User } from '../../modules/user/user.entity';
+import { Roles } from '../../modules/roles/roles.entity';
 import { SigninUserDto } from '../dto/signin-user.dto';
 import { RedisModule } from '@nestjs-modules/ioredis';
 
