@@ -10,7 +10,7 @@
   "license": "ISC",
   "main": "lib/index.js",
   "bin": {
-    "devlink": "bin/index.js"
+    "devlink": "bin/bin.js"
   },
   "directories": {
     "lib": "lib",
@@ -27,15 +27,15 @@
     "url": "git+https://github.com/developerlinks/devlink.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
-  "bugs": {
-    "url": "https://github.com/developerlinks/devlink/issues"
+    "dev": "tsc -w",
+    "build": "tsc",
+    "clean": "rm -rf lib",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@devlink/cli-utils": "^0.0.3-alpha.0",
     "colors": "^1.4.0",
-    "commander": "^9.4.0",
+    "commander": "^10.0.0",
     "dotenv": "^16.0.1",
     "minimist": "^1.2.6",
     "npm": "^8.18.0",

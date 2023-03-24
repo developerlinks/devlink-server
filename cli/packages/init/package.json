@@ -21,7 +21,10 @@
     "url": "git+https://github.com/developerlinks/devlink.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "dev": "tsc -w",
+    "build": "tsc",
+    "clean": "rm -rf lib",
+    "prepublishOnly": "npm run build"
   },
   "bugs": {
     "url": "https://github.com/developerlinks/devlink/issues"

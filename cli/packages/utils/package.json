@@ -4,15 +4,12 @@
   "description": "> TODO: description",
   "author": "zhangbaolin <zhangbaolin.work@foxmail.com>",
   "homepage": "https://github.com/developerlinks/devlink#readme",
-  "license": "ISC",
+  "license": "MIT",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
   },
-  "files": [
-    "lib"
-  ],
   "publishConfig": {
     "access": "public"
   },
@@ -20,8 +17,14 @@
     "type": "git",
     "url": "git+https://github.com/developerlinks/devlink.git"
   },
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "dev": "tsc -w",
+    "build": "tsc",
+    "clean": "rm -rf lib",
+    "prepublishOnly": "npm run build"
   },
   "bugs": {
     "url": "https://github.com/developerlinks/devlink/issues"

@@ -1,20 +1,24 @@
-const fs = require('fs');
-const path = require('path');
-const fse = require('fs-extra');
-const program = require('commander');
-const colors = require('colors/safe');
-const {homedir} = require('os');
-const semver = require('semver');
-const { log, npm, Package, exec } = require('@devlink/cli-utils');
-const packageConfig = require('../package');
-const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME, NPM_NAME, DEPENDENCIES_PATH } = require('./const');
+import fs from 'fs';
+import path from 'path';
+import fse from 'fs-extra';
+import { Command } from 'commander';
+import colors from 'colors/safe';
+import { homedir } from 'os';
+import semver from 'semver';
+import {
+  log,
+  Package,
+  exec,
+  getLatestVersion,
+  getNpmLatestSemverVersion,
+} from '@devlink/cli-utils';
+import packageConfig from '../package.json';
+import { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME, NPM_NAME, DEPENDENCIES_PATH } from './const';
 
-module.exports = cli;
-
-let args;
 let config;
+let args;
 
-async function cli() {
+export default async function cli(): Promise<void> {
   try {
     await prepare();
     registerCommand();
@@ -24,6 +28,7 @@ async function cli() {
 }
 
 function registerCommand() {
+  const program = new Command();
   program.version(packageConfig.version).usage('<command> [options]');
 
   program
@@ -33,7 +38,7 @@ function registerCommand() {
     .option('--force', '覆盖当前路径文件（谨慎使用）')
     .action(async (type, { packagePath, force }) => {
       const packageName = '@devlink/cli-init';
-      const packageVersion = await npm.getLatestVersion(packageName);
+      const packageVersion = await getLatestVersion(packageName);
       await execCommand({ packagePath, packageName, packageVersion }, { type, force });
     });
 
@@ -147,7 +152,7 @@ async function prepare() {
 async function checkGlobalUpdate() {
   log.verbose('检查 @devlink/cli 最新版本');
   const currentVersion = packageConfig.version;
-  const lastVersion = await npm.getNpmLatestSemverVersion(NPM_NAME, currentVersion);
+  const lastVersion = await getNpmLatestSemverVersion(NPM_NAME, currentVersion);
   if (semver.gt(lastVersion, currentVersion)) {
     log.warn(
       colors.yellow(`请手动更新 ${NPM_NAME}，当前版本：${packageConfig.version}，最新版本：${lastVersion}

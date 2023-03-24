@@ -59,4 +59,4 @@ amo --debug
 > If you want to add your template, please write your warehouse address in pr
 
 
-<!-- devlink-cli init --packagePath /Users/bowling/Desktop/devlink-cli/packages/init/ -->
+devlink init --packagePath /Users/zhangbaolin/code/myProject/devlink/cli/packages/init/ --debug
