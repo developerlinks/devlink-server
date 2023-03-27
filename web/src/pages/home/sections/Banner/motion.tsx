@@ -9,6 +9,7 @@ import {
   Switch,
   Badge,
   Space,
+  Icon,
 } from '@arco-design/web-react';
 import {
   IconCommon,
@@ -24,6 +25,8 @@ import IconFont from '../../assets/banner/ic_font.svg';
 import IconReact from './iconReact';
 import IconCode from '../../assets/banner/ic_code.svg';
 import styles from './style/motion.module.less';
+import Logo from '@/assets/devlink_black.svg';
+
 import useLocale from '../../hooks/useLocale';
 import { bannerHeroPng } from '../../utils/cdn-resource';
 
@@ -46,12 +49,13 @@ export default function Motion(props) {
         </div>
         <div className={styles.url}>
           <IconBall />
-          arco.design
+          devlink.wiki
         </div>
       </div>
       <div className={cs(styles.top, 'js-motion-top')}>
         <div className={styles.badge}>
-          <IconArcoDesign className={styles['badge-icon']} />
+          {/* // TODO */}
+          <Logo  className={styles['badge-icon']} />
           <Divider type="vertical" />
           <span className={styles['badge-text']}>企业级设计系统</span>
         </div>

@@ -8,14 +8,14 @@ import {
   JoinTable,
   PrimaryColumn,
 } from 'typeorm';
-import { v5 as uuidv5 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { Material } from '../materials/material.entity';
 import { User } from '../user/user.entity';
 
 @Entity()
 export class Group {
   @PrimaryColumn('uuid')
-  id: string = uuidv5('group', uuidv5.DNS);
+  id: string = uuidv4();
 
   @Column()
   name: string;

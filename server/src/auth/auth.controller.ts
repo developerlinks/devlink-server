@@ -8,12 +8,13 @@ import {
   ClassSerializerInterceptor,
   Get,
 } from '@nestjs/common';
-// import { SerializeInterceptor } from '../interceptors/serialize.interceptor';
+import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
+
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AuthService } from './auth.service';
 import { SigninUserDto } from './dto/signin-user.dto';
 import { EmailService } from '../tools/mail/mail.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { SignupUserDto } from './dto/signup-user.dto';
 
 @ApiTags('用户验证')
@@ -21,22 +22,40 @@ import { SignupUserDto } from './dto/signup-user.dto';
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(new TypeormFilter())
 export class AuthController {
-  constructor(private authService: AuthService, private readonly emailService: EmailService) {}
+  constructor(
+    private authService: AuthService,
+    private readonly emailService: EmailService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {}
 
+  @ApiOperation({ summary: '登录' })
   @Post('/signin')
   async signin(@Body() dto: SigninUserDto) {
     const { email, password } = dto;
-    const token = await this.authService.signin(email, password);
+    const { token, refreshToken } = await this.authService.signin(email, password);
+    // 设置token
+    this.redis.set(email, token, 'EX', 24 * 60 * 60);
     return {
       access_token: token,
+      refreshToken,
     };
   }
 
+  @ApiOperation({ summary: '刷新 Token' })
+  @Post('refresh-token')
+  async refreshToken(
+    @Body('refreshToken') refreshToken: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    return this.authService.refreshAccessToken(refreshToken);
+  }
+
+  @ApiOperation({ summary: '注册' })
   @Post('/signup')
   signup(@Body() dto: SignupUserDto) {
     return this.authService.signup(dto);
   }
 
+  @ApiOperation({ summary: '发送验证码' })
   @Post('send-code')
   async sendVerificationCode(@Body('email') email: string): Promise<void> {
     await this.emailService.sendVerificationCode(email);

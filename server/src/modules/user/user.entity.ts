@@ -1,6 +1,6 @@
 import { Roles } from 'src/modules/roles/roles.entity';
 import { Exclude } from 'class-transformer';
-import { v5 as uuidv5 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   Column,
@@ -14,27 +14,32 @@ import {
 } from 'typeorm';
 import { Logs } from 'src/modules/logs/logs.entity';
 import { Material } from 'src/modules/materials/material.entity';
-import { Profile } from 'src/modules/profile/profile.entity';
+import { Profile } from 'src/modules/user/profile.entity';
 import { Group } from '../group/group.entity';
 import { Like } from '../like/like.entity';
 import { Follow } from '../follow/follow.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class User {
+  @ApiProperty()
   @PrimaryColumn('uuid')
-  id: string = uuidv5('user', uuidv5.DNS);
+  id: string = uuidv4();
 
+  @ApiProperty()
   @Column({ unique: true })
   username: string;
 
+  @ApiProperty()
   @Column({ unique: true })
   email: string;
 
+  @ApiProperty()
   @Column()
   @Exclude()
   password: string;
 
-  // typescript -> 数据库 关联关系 Mapping
+  @ApiProperty()
   @OneToMany(() => Logs, logs => logs.user, { cascade: true })
   logs: Logs[];
 

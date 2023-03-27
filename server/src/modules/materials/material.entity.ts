@@ -12,7 +12,7 @@ import {
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { v5 as uuidv5 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { Comment } from '../comment/comment.entity';
 import { Group } from '../group/group.entity';
 import { Like } from '../like/like.entity';
@@ -22,7 +22,7 @@ import { Tag } from '../tag/tag.entity';
 export class Material {
   @Expose()
   @PrimaryColumn('uuid')
-  id: string = uuidv5('material', uuidv5.DNS);
+  id: string = uuidv4();
 
   @Expose()
   @Column()

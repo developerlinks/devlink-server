@@ -19,6 +19,6 @@ declare class Package {
     getRootFilePath(isOriginal?: boolean): string | null;
     getVersion(): Promise<string | null>;
     getLatestVersion(): Promise<string | null>;
-    update(): Promise<void>;
+    update(): Promise<any>;
 }
 export default Package;

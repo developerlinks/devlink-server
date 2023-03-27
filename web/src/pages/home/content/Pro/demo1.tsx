@@ -1,7 +1,7 @@
 import React, { forwardRef, useState } from 'react';
 import { Grid } from '@arco-design/web-react';
 import ResizeObserver from '../../utils/resizeObserver';
-import Chart from './chart';
+// import Chart from './chart';
 import * as chartData from './chartData';
 import RecentProjects from './recentProjects';
 import styles from './style/index.module.less';
@@ -22,7 +22,7 @@ function Demo1(_, ref) {
     >
       <div className={`${styles.demo} ${styles.demo1}`} ref={ref}>
         <Grid.Row gutter={isMultiCol ? gutter : 0} style={{ marginBottom: 20 }}>
-          <Grid.Col span={span}>
+          {/* <Grid.Col span={span}>
             <Chart
               title={locale['content.pro.chart.title.visitor']}
               type="line"
@@ -35,7 +35,7 @@ function Demo1(_, ref) {
               type="bar"
               data={chartData.download}
             />
-          </Grid.Col>
+          </Grid.Col> */}
         </Grid.Row>
         <RecentProjects />
       </div>

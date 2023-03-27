@@ -110,7 +110,7 @@ class Package {
     return null;
   }
 
-  async update(): Promise<void> {
+  async update(){
     const latestVersion = await this.getLatestVersion();
     log.verbose('install', this.packageName, latestVersion);
     return npminstall({

@@ -1,11 +1,11 @@
 import { Column, Entity, ManyToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { Material } from '../materials/material.entity';
-import { v5 as uuidv5 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class Tag {
-  @PrimaryColumn('uuid', { default: uuidv5('tag', uuidv5.DNS) })
-  id: string;
+  @PrimaryColumn('uuid')
+  id: string = uuidv4();
 
   @Column()
   name: string;

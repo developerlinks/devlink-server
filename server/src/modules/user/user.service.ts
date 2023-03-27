@@ -42,12 +42,12 @@ export class UserService {
     return res;
   }
 
-  findAll(query: getUserDto) {
+  async findAll(query: getUserDto) {
     const { limit, page, username, email, gender, role } = query;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
 
-    return this.userRepository.find({
+    const [data, total] = await this.userRepository.findAndCount({
       // TODO: select?
       select: {
         id: true,
@@ -80,6 +80,9 @@ export class UserService {
       take,
       skip,
     });
+    const totalPages = Math.ceil(total / limit);
+
+    return { data, total, totalPages };
   }
 
   find(username: string) {
@@ -100,14 +103,19 @@ export class UserService {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async update(id: string, user: Partial<User>) {
+  // 联合模型更新，需要使用save方法或者queryBuilder，
+  // update方法，只适合单模型的更新，不适合有关系的模型更新
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const userTemp = await this.findProfile(id);
-    const newUser = this.userRepository.merge(userTemp, user);
-    // 联合模型更新，需要使用save方法或者queryBuilder
-    return this.userRepository.save(newUser);
 
-    // 下面的update方法，只适合单模型的更新，不适合有关系的模型更新
-    // return this.userRepository.update(parseInt(id), newUser);
+    if (updateUserDto.gender !== undefined) userTemp.profile.gender = updateUserDto.gender;
+    if (updateUserDto.photo !== undefined) userTemp.profile.photo = updateUserDto.photo;
+    if (updateUserDto.address !== undefined) userTemp.profile.address = updateUserDto.address;
+    if (updateUserDto.description !== undefined)
+      userTemp.profile.description = updateUserDto.description;
+
+    const newUser = this.userRepository.merge(userTemp, updateUserDto);
+    return this.userRepository.save(newUser);
   }
 
   async remove(id: string) {
@@ -195,25 +203,14 @@ export class UserService {
     }
   }
 
-  findUserGroup() {
-    // TODO: 返回自己名下的
-    return this.groupRepository.find({
-      relations: {
-        user: true,
-      },
-    });
-  }
-
-  async addGroup(group: Partial<Group>) {
-    // TODO: 添加自己的 group 4
+  async addGroup(id: string, group: Partial<Group>) {
     const usertmp = await this.userRepository.findOne({
       where: {
-        id: '',
+        id,
       },
     });
     group.user = usertmp;
     const groupTmp = await this.groupRepository.create(group);
-    console.info('groupTmp', groupTmp);
     return this.groupRepository.save(groupTmp);
   }
 }

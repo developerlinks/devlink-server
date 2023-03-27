@@ -4,14 +4,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
 import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { RedisModule } from '@nestjs-modules/ioredis';
 import { connectionParams } from '../ormconfig';
-
 import { LogsModule } from './modules/logs/logs.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { MenusModule } from './modules/menus/menus.module';
 import { AuthModule } from './auth/auth.module';
 import { MaterialModule } from './modules/materials/material.module';
+import { ConfigEnum } from './enum/config.enum';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 
@@ -53,6 +53,26 @@ const schema = Joi.object({
         },
       ],
       validationSchema: schema,
+    }),
+    RedisModule.forRootAsync({
+      useFactory: (configService: ConfigService, logger: LoggerService) => {
+        const host = configService.get(ConfigEnum.REDIS_HOST);
+        const port = configService.get(ConfigEnum.REDIS_PORT);
+        const password = configService.get(ConfigEnum.REDIS_PASSWORD);
+        // ${password}@
+        const url = password ? `redis://${host}:${port}` : `redis://${host}:${port}`;
+        console.info('url', url);
+        return {
+          config: {
+            url,
+            reconnectOnError: err => {
+              logger.error(`Redis Connection error: ${err}`, url);
+              return true;
+            },
+          },
+        };
+      },
+      inject: [ConfigService, Logger],
     }),
     TypeOrmModule.forRoot(connectionParams),
     UserModule,

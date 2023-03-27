@@ -8,9 +8,9 @@
     "author": "zhangbaolin <zhangbaolin.work@foxmail.com>",
     "homepage": "https://github.com/developerlinks/devlink#readme",
     "license": "ISC",
-    "main": "lib/index.js",
+    "main": "lib/src/index.js",
     "bin": {
-        "devlink": "bin/bin.js"
+        "devlink": "lib/src/bin.js"
     },
     "directories": {
         "lib": "lib",

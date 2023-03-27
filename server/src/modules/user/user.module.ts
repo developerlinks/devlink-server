@@ -6,17 +6,12 @@ import { User } from './user.entity';
 import { Roles } from 'src/modules/roles/roles.entity';
 import { Logs } from 'src/modules/logs/logs.entity';
 import { Group } from '../group/group.entity';
-import { JwtMiddleware } from 'src/middleware/jwt.middleware';
+import { Profile } from './profile.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Logs, Roles, Group])],
+  imports: [TypeOrmModule.forFeature([User, Logs, Roles, Group, Profile])],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],
 })
-// export class UserModule {}
-export class UserModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).forRoutes('/user');
-  }
-}
+export class UserModule {}

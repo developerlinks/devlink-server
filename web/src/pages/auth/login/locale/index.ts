@@ -1,6 +1,6 @@
 const i18n = {
   'en-US': {
-    'login.form.title': 'Login to Arco Design Pro',
+    'login.form.title': 'Login to devlink',
     'login.form.userName.errMsg': 'Username cannot be empty',
     'login.form.password.errMsg': 'Password cannot be empty',
     'login.form.login.errMsg': 'Login error, please refresh and try again',

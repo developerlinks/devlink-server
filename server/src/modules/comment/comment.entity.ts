@@ -6,13 +6,13 @@ import {
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
-import { v5 as uuidv5 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { Material } from '../materials/material.entity';
 
 @Entity()
 export class Comment {
   @PrimaryColumn('uuid')
-  id: string = uuidv5('comment', uuidv5.DNS);
+  id: string = uuidv4();
 
   @Column()
   content: string;

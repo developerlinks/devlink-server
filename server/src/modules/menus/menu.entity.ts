@@ -7,12 +7,12 @@ import {
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { v5 as uuidv5 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class Menu {
   @PrimaryColumn('uuid')
-  id: string = uuidv5('menu', uuidv5.DNS);
+  id: string = uuidv4();
 
   @Column()
   name: string;
