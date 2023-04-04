@@ -32,13 +32,21 @@ export class AuthController {
   @Post('/signin')
   async signin(@Body() dto: SigninUserDto) {
     const { email, password } = dto;
-    const { token, refreshToken } = await this.authService.signin(email, password);
-    // 设置token
-    this.redis.set(email, token, 'EX', 24 * 60 * 60);
-    return {
-      access_token: token,
-      refreshToken,
-    };
+    console.info('1');
+    try {
+      const { token, refreshToken } = await this.authService.signin(email, password);
+      // 设置token
+      console.info('redis before');
+      this.redis.set(email, token, 'EX', 24 * 60 * 60);
+      console.info('redis after');
+
+      return {
+        access_token: token,
+        refreshToken,
+      };
+    } catch (error) {
+      console.info('eror', error);
+    }
   }
 
   @ApiOperation({ summary: '刷新 Token' })

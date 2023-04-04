@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
+import { Gender } from '../profile.entity';
 
 export class UpdateUserDto {
   @ApiProperty({ description: '用户名' })
@@ -17,10 +18,10 @@ export class UpdateUserDto {
   @IsString()
   password?: string;
 
-  @ApiProperty({ description: '性别' })
+  @ApiProperty({ description: '性别', enum: Gender }) // 指定枚举类型
   @IsOptional()
-  @IsString()
-  gender?: number;
+  @IsEnum(Gender)
+  gender?: Gender;
 
   @ApiProperty({ description: '照片' })
   @IsOptional()

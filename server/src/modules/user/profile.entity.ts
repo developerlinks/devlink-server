@@ -10,36 +10,42 @@ import {
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
-enum AccountType {
+export enum AccountType {
   EMAIL = 'email',
   GITHUB = 'github',
+}
+
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+  OTHER = 'other',
 }
 
 @Entity()
 export class Profile {
   @PrimaryColumn('uuid')
   @Expose()
-  id: string = uuidv4();
+  id: string;
 
-  @Column()
-  @Expose()
-  gender: number;
+  @Column({ type: 'enum', enum: Gender, default: Gender.OTHER })
+  @Exclude()
+  gender: Gender;
 
-  @Column()
+  @Column({ default: '' })
   @Expose()
   photo: string;
 
-  @Column()
+  @Column({ default: '' })
   @Expose()
   address: string;
 
-  @Column()
+  @Column({ default: '' })
   @Exclude()
   description: string;
 
-  @Column()
+  @Column({ type: 'enum', enum: AccountType, default: AccountType.EMAIL })
   @Exclude()
-  accountType: string;
+  accountType: AccountType;
 
   @Column({ nullable: true })
   @Expose()
@@ -54,7 +60,14 @@ export class Profile {
   @Expose()
   user: User;
 
-  constructor() {
-    this.accountType = this.accountType ?? AccountType.EMAIL;
+  constructor(partial?: Partial<Profile>) {
+    this.id = uuidv4();
+    this.gender = partial?.gender ?? Gender.OTHER;
+    this.photo = partial?.photo ?? '';
+    this.address = partial?.address ?? '';
+    this.description = partial?.description ?? '';
+    this.accountType = partial?.accountType ?? AccountType.EMAIL;
+    this.refresh_token = partial?.refresh_token ?? '';
+    this.refresh_token_expires_at = partial?.refresh_token_expires_at ?? 0;
   }
 }

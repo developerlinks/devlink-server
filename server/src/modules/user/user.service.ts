@@ -10,6 +10,7 @@ import { getUserDto } from './dto/get-user.dto';
 import { Logs } from 'src/modules/logs/logs.entity';
 import { Group } from '../group/group.entity';
 import { getServerConfig } from 'ormconfig';
+import { Gender, Profile } from './profile.entity';
 
 @Injectable()
 export class UserService {
@@ -35,9 +36,9 @@ export class UserService {
     const userTmp = await this.userRepository.create(user);
     userTmp.password = await argon2.hash(userTmp.password);
     const group = new Group();
-    group.create_at = Date.now().toString();
+    const profile = new Profile({ gender: Gender.OTHER });
     userTmp.group = [group];
-
+    userTmp.profile = profile;
     const res = await this.userRepository.save(userTmp);
     return res;
   }
@@ -95,7 +96,7 @@ export class UserService {
   findByEmail(email: string) {
     return this.userRepository.findOne({
       where: { email },
-      relations: ['roles', 'roles.menus'],
+      relations: ['roles', 'roles.menus', 'profile'],
     });
   }
 

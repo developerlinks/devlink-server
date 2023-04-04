@@ -20,7 +20,7 @@ export class AuthService {
 
   async signin(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
-
+    console.info('user', user);
     if (!user) {
       throw new ForbiddenException('用户不存在，请注册');
     }
@@ -47,12 +47,13 @@ export class AuthService {
       { expiresIn: '180 days' },
     );
 
-    user.profile.refresh_token = refreshToken;
-    user.profile.refresh_token_expires_at = Number(
-      new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
-    );
+    console.info('refreshToken', refreshToken);
+    // user.profile.refresh_token = refreshToken;
+    // user.profile.refresh_token_expires_at = Number(
+    //   new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
+    // );
 
-    await this.userRepository.save(user);
+    // await this.userRepository.save(user);
 
     return {
       token,

@@ -12,6 +12,7 @@ import { MenusModule } from './modules/menus/menus.module';
 import { AuthModule } from './auth/auth.module';
 import { MaterialModule } from './modules/materials/material.module';
 import { ConfigEnum } from './enum/config.enum';
+import { PolisherModule } from './tools/textPolisher/text-polisher.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 
@@ -81,6 +82,7 @@ const schema = Joi.object({
     AuthModule,
     MenusModule,
     MaterialModule,
+    PolisherModule,
   ],
   controllers: [],
   providers: [Logger],

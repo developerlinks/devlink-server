@@ -59,7 +59,7 @@ export class UserController {
   @Post('adduser')
   @UseGuards(JwtGuard)
   addUser(@Body(CreateUserPipe) dto: CreateUserDto, @Req() req) {
-    console.info('req--', req.user);
+    // 判断权限
     const user = dto as User;
     return this.userService.create(user);
   }

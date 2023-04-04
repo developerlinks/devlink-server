@@ -15,7 +15,7 @@ import { User } from '../user/user.entity';
 @Entity()
 export class Group {
   @PrimaryColumn('uuid')
-  id: string = uuidv4();
+  id: string;
 
   @Column()
   name: string;
@@ -37,4 +37,12 @@ export class Group {
     onDelete: 'SET NULL',
   })
   material: Material[];
+
+  constructor(partial?: Partial<Group>) {
+    this.id = uuidv4();
+    this.name = '';
+    this.description = '';
+    this.create_at = new Date().toISOString();
+    Object.assign(this, partial);
+  }
 }
