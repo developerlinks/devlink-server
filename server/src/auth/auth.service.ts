@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Profile } from 'src/modules/user/profile.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/modules/user/user.entity';
+import { User } from 'src/entity/user.entity';
 @Injectable()
 export class AuthService {
   constructor(

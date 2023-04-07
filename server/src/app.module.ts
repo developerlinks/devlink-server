@@ -6,7 +6,7 @@ import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { connectionParams } from '../ormconfig';
-import { LogsModule } from './modules/logs/logs.module';
+import { LogsModule } from './modules/logsM/logs.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { MenusModule } from './modules/menus/menus.module';
 import { AuthModule } from './auth/auth.module';
@@ -15,7 +15,6 @@ import { ConfigEnum } from './enum/config.enum';
 import { PolisherModule } from './tools/textPolisher/text-polisher.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
-
 const schema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
   DB_PORT: Joi.number().default(3306),

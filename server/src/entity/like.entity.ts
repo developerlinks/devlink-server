@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { Material } from '../materials/material.entity';
-import { User } from '../user/user.entity';
+import { Material } from './material.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Like {

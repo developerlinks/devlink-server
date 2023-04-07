@@ -10,7 +10,7 @@ import { JwtStrategy } from './auth.strategy';
 import { MailModule } from '../tools/mail/mail.module';
 import { EmailService } from '../tools/mail/mail.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/modules/user/user.entity';
+import { User } from 'src/entity/user.entity';
 import { Profile } from 'src/modules/user/profile.entity';
 
 @Global()

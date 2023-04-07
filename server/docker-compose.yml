@@ -20,3 +20,9 @@ services:
     restart: always
     ports:
       - 8080:8080
+
+  redis: # 新添加的 Redis 服务
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379

@@ -2,13 +2,13 @@ import { Injectable, Put } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './user.entity';
+import { User } from '../../entity/user.entity';
 import { In, Repository } from 'typeorm';
-import { Roles, RolesEnum } from 'src/modules/roles/roles.entity';
+import { Roles, RolesEnum } from 'src/entity/roles.entity';
 import * as argon2 from 'argon2';
 import { getUserDto } from './dto/get-user.dto';
-import { Logs } from 'src/modules/logs/logs.entity';
-import { Group } from '../group/group.entity';
+import { Logs } from 'src/entity/logs.entity';
+import { Group } from '../../entity/group.entity';
 import { getServerConfig } from 'ormconfig';
 import { Gender, Profile } from './profile.entity';
 

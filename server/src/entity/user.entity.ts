@@ -1,4 +1,4 @@
-import { Roles } from 'src/modules/roles/roles.entity';
+import { Roles } from 'src/entity/roles.entity';
 import { Exclude } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -12,12 +12,12 @@ import {
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
-import { Logs } from 'src/modules/logs/logs.entity';
-import { Material } from 'src/modules/materials/material.entity';
+import { Logs } from 'src/entity/logs.entity';
+import { Material } from 'src/entity/material.entity';
 import { Profile } from 'src/modules/user/profile.entity';
-import { Group } from '../group/group.entity';
-import { Like } from '../like/like.entity';
-import { Follow } from '../follow/follow.entity';
+import { Group } from './group.entity';
+import { Like } from './like.entity';
+import { Follow } from './follow.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()

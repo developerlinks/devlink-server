@@ -1,8 +1,8 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-
-import { DataSource, DataSourceOptions } from 'typeorm';
-import * as fs from 'fs';
+import * as path from 'path';
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import { ConfigEnum } from './src/enum/config.enum';
 
 // 通过环境变量读取不同的.env文件
@@ -30,11 +30,11 @@ export function buildConnectionOptions() {
   const config = { ...defaultConfig, ...envConfig };
 
   const logFlag = config['LOG_ON'] === 'true';
+  // const entitiesDir = [path.join(__dirname, 'src', 'entity', '*.entity{.js,.ts}')];
+  const entitiesDir = ['src/entity/*.entity{.js,.ts}'];
 
-  const entitiesDir = [
-    __dirname + '/**/**/**/*.entity{.js,.ts}',
-    __dirname + '/**/**/*.entity{.js,.ts}',
-  ];
+  console.info('connectionParams', entitiesDir);
+
   return {
     type: config[ConfigEnum.DB_TYPE],
     host: config[ConfigEnum.DB_HOST],

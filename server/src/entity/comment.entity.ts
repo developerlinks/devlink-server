@@ -7,7 +7,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { Material } from '../materials/material.entity';
+import { Material } from './material.entity';
 
 @Entity()
 export class Comment {

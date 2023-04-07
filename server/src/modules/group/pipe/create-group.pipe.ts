@@ -1,6 +1,6 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { CreateGroupDto } from '../dto/create-group.dto';
-import { Group } from '../group.entity';
+import { Group } from '../../../entity/group.entity';
 
 @Injectable()
 export class CreateGroupPipe implements PipeTransform {

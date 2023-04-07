@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 import { group } from 'console';
-import { User } from 'src/modules/user/user.entity';
+import { User } from 'src/entity/user.entity';
 import {
   Column,
   Entity,
@@ -13,10 +13,10 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { Comment } from '../comment/comment.entity';
-import { Group } from '../group/group.entity';
-import { Like } from '../like/like.entity';
-import { Tag } from '../tag/tag.entity';
+import { Comment } from './comment.entity';
+import { Group } from './group.entity';
+import { Like } from './like.entity';
+import { Tag } from './tag.entity';
 
 @Entity()
 export class Material {

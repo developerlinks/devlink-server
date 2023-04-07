@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { Group } from '../group/group.entity';
-import { Tag } from '../tag/tag.entity';
+import { Group } from '../../entity/group.entity';
+import { Tag } from '../../entity/tag.entity';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
-import { Material } from './material.entity';
+import { Material } from '../../entity/material.entity';
 
 @Injectable()
 export class MaterialService {

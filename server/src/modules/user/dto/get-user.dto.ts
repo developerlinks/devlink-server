@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { RolesEnum } from 'src/modules/roles/roles.entity';
+import { RolesEnum } from 'src/entity/roles.entity';
 import { Gender } from '../profile.entity';
 
 export class getUserDto {

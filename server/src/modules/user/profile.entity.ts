@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { User } from 'src/modules/user/user.entity';
+import { User } from 'src/entity/user.entity';
 import {
   Column,
   Entity,

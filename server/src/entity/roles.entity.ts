@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Expose } from 'class-transformer';
-import { User } from 'src/modules/user/user.entity';
-import { Menu } from 'src/modules/menus/menu.entity';
+import { User } from 'src/entity/user.entity';
+import { Menu } from 'src/entity/menu.entity';
 
 export enum RolesEnum {
   super,

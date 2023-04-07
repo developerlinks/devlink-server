@@ -4,7 +4,7 @@ import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { CreateMaterialPipe } from './pipes/create-material.pipe';
-import { Material } from './material.entity';
+import { Material } from '../../entity/material.entity';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('物料')

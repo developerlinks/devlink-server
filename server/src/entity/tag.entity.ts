@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { Material } from '../materials/material.entity';
+import { Material } from './material.entity';
 import { v4 as uuidv4 } from 'uuid';
 
 @Entity()

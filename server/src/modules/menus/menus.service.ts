@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
-import { Menu } from './menu.entity';
+import { Menu } from '../../entity/menu.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
