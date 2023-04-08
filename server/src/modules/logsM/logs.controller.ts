@@ -12,6 +12,7 @@ import { Expose } from 'class-transformer';
 // import { SerializeInterceptor } from '../interceptors/serialize.interceptor';
 import { Logs } from '../../entity/logs.entity';
 import { Action } from 'src/enum/action.enum';
+import { ApiTags } from '@nestjs/swagger';
 
 class LogsDto {
   @IsString()
@@ -33,6 +34,7 @@ class PublicLogsDto {
   name: string;
 }
 
+@ApiTags('logs')
 @Controller('logs')
 // UserInterceptor(new SerializationInterceptor(DTO))
 export class LogsController {
