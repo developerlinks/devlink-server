@@ -178,28 +178,23 @@ export class UserService {
     const adminEmail = 'devlinkroot@163.com';
     const adminUserName = 'devlinkroot';
     const adminPassword = config['DB_PASSWORD'] as string;
+
     // 检查管理员账号是否已存在
     const existingAdmin = await this.userRepository.findOne({ where: { email: adminEmail } });
     if (!existingAdmin) {
       // 创建管理员账号
-      const admin = new User();
-      admin.username = adminUserName;
-      admin.email = adminEmail;
-      admin.password = await argon2.hash(adminPassword);
-      const role = await this.rolesRepository.findOne({ where: { id: RolesEnum.super } });
-      admin.roles = [role];
-
-      const group = new Group();
-      group.name = '默认分组';
-      group.description = '这是一个分组描述....';
-      group.create_at = Date.now().toString();
-      admin.group = [group];
+      const adminData: Partial<User> = {
+        username: adminUserName,
+        email: adminEmail,
+        password: adminPassword,
+        roles: [RolesEnum.super] as any,
+      };
 
       try {
-        await this.userRepository.save(admin);
-        console.log('Admin account created successfully.');
+        await this.create(adminData);
+        console.log('Admin account created successfully');
       } catch (error) {
-        console.log('Failed to create admin account:', error.message);
+        console.log('Failed to create admin account: ', error.message);
       }
     }
   }

@@ -26,7 +26,7 @@ import { getUserDto } from './dto/get-user.dto';
 import { CreateUserPipe } from './pipes/create-user.pipe';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateGroupDto } from '../group/dto/create-group.dto';
 import { CreateGroupPipe } from '../group/pipe/create-group.pipe';
 
@@ -51,6 +51,7 @@ export class UserController {
   @ApiOperation({ summary: '查询自己的信息' })
   @Get('userinfo')
   @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   getUserInfo(@Req() req) {
     return this.userService.findProfile(req.user.userId);
   }
@@ -58,6 +59,7 @@ export class UserController {
   @ApiOperation({ summary: '添加用户（后台用）' })
   @Post('adduser')
   @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   addUser(@Body(CreateUserPipe) dto: CreateUserDto, @Req() req) {
     // 判断权限
     const user = dto as User;
@@ -79,6 +81,7 @@ export class UserController {
   @ApiOperation({ summary: '更新自己的信息' })
   @Patch('/:id')
   @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   async updateUser(
     @Body() updateUserDto: UpdateUserDto,
     @Param('id') id: string,
@@ -94,6 +97,7 @@ export class UserController {
   @ApiOperation({ summary: '删除用户' })
   @Delete(':id')
   @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   removeUser(@Param('id') id: string, @Req() req) {
     //TODO: 判断是否是管理员
     return this.userService.remove(id);
@@ -114,6 +118,7 @@ export class UserController {
   @ApiOperation({ summary: '添加分组' })
   @Post('group/:id')
   @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   addGroup(@Body(CreateGroupPipe) dto: CreateGroupDto, @Param('id') id: string, @Req() req) {
     if (id !== req.user.userId) {
       throw new UnauthorizedException();

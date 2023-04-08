@@ -19,7 +19,7 @@ jobs:
         node-version: 14
 
     - name: Install dependencies
-      run: npm ci
+      run: pnpm install
 
     - name: Build project
       run: npm run build
@@ -31,9 +31,9 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
-          cd /home/ubuntu/devlink/app/devlink
+          cd /home/ubuntu/app/devlink
           git pull
           cd server
-          npm install
+          pnpm install
           npm run build
-          pm2 start devlink
+          pm2 restart devlink

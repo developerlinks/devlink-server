@@ -127,7 +127,7 @@ export const getChineseTemplate = (
           text-align: center;
         "
       >
-        如果你不想受到这个邮件请联系<a
+        如果你不想收到这个邮件请联系<a
           target="_blank"
           style="color: #444; text-decoration: underline"
           href="mailto:ldeveloperlinks@163.com"

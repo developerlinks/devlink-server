@@ -2,13 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { getServerConfig } from 'ormconfig';
 import { getChineseTemplate } from './template';
+import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 
 @Injectable()
 export class EmailService {
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(
+    private readonly mailerService: MailerService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {}
 
   async sendVerificationCode(to: string): Promise<void> {
-    // TODO: 记录 IP 一小时限制请求 10 次
     const config = getServerConfig();
     const code = Math.floor(Math.random() * 1000000)
       .toString()
@@ -20,9 +23,9 @@ export class EmailService {
         subject: 'devlink 验证码',
         html: getChineseTemplate(code, getCurrentTime()),
       });
-      console.info('send code success');
+      this.redis.set(to, code, 'EX', 60 * 15);
     } catch (error) {
-      console.info('error: ', error);
+      console.info('send email error: ', error);
     }
   }
 }

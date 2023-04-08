@@ -14,8 +14,9 @@ import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AuthService } from './auth.service';
 import { SigninUserDto } from './dto/signin-user.dto';
 import { EmailService } from '../tools/mail/mail.service';
-import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiOkResponse, ApiBody, ApiTags } from '@nestjs/swagger';
 import { SignupUserDto } from './dto/signup-user.dto';
+import { SendCodeDto } from 'src/tools/mail/dto/send-code.dto';
 
 @ApiTags('用户验证')
 @Controller('auth')
@@ -32,21 +33,13 @@ export class AuthController {
   @Post('/signin')
   async signin(@Body() dto: SigninUserDto) {
     const { email, password } = dto;
-    console.info('1');
-    try {
-      const { token, refreshToken } = await this.authService.signin(email, password);
-      // 设置token
-      console.info('redis before');
-      this.redis.set(email, token, 'EX', 24 * 60 * 60);
-      console.info('redis after');
-
-      return {
-        access_token: token,
-        refreshToken,
-      };
-    } catch (error) {
-      console.info('eror', error);
-    }
+    const { token, refreshToken } = await this.authService.signin(email, password);
+    // 设置token
+    this.redis.set(email, token, 'EX', 24 * 60 * 60);
+    return {
+      access_token: token,
+      refreshToken,
+    };
   }
 
   @ApiOperation({ summary: '刷新 Token' })
@@ -64,6 +57,8 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '发送验证码' })
+  @ApiBody({ description: '邮箱', type: SendCodeDto })
+  @ApiOkResponse({ description: '验证码', type: String })
   @Post('send-code')
   async sendVerificationCode(@Body('email') email: string): Promise<void> {
     await this.emailService.sendVerificationCode(email);

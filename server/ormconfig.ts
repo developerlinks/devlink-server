@@ -10,7 +10,6 @@ export function getEnv(env: string): Record<string, unknown> {
   if (fs.existsSync(env)) {
     return dotenv.parse(fs.readFileSync(env));
   }
-  console.info('fs.existsSync(env)', fs.existsSync(env));
   return {};
 }
 
@@ -30,9 +29,6 @@ export function buildConnectionOptions() {
   const config = { ...defaultConfig, ...envConfig };
   const logFlag = config['LOG_ON'] === 'true';
   const entitiesDir = [path.join(__dirname, 'src', 'entity', '*.entity{.js,.ts}')];
-  // const entitiesDir = ['src/entity/*.entity{.js,.ts}'];
-
-  console.info('connectionParams', entitiesDir);
 
   return {
     type: config[ConfigEnum.DB_TYPE],

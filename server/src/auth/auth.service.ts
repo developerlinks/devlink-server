@@ -3,12 +3,13 @@ import { UserService } from 'src/modules/user/user.service';
 // import { getUserDto } from '../user/dto/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
-import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { Profile } from 'src/entity/profile.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../src/entity/user.entity';
+import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
+import { SignupUserDto } from './dto/signup-user.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -16,11 +17,11 @@ export class AuthService {
     private jwt: JwtService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Profile) private readonly profileRepository: Repository<Profile>,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async signin(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
-    console.info('user', user);
     if (!user) {
       throw new ForbiddenException('用户不存在，请注册');
     }
@@ -47,13 +48,12 @@ export class AuthService {
       { expiresIn: '180 days' },
     );
 
-    console.info('refreshToken', refreshToken);
-    // user.profile.refresh_token = refreshToken;
-    // user.profile.refresh_token_expires_at = Number(
-    //   new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
-    // );
+    user.profile.refresh_token = refreshToken;
+    user.profile.refresh_token_expires_at = Number(
+      new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
+    );
 
-    // await this.userRepository.save(user);
+    await this.userRepository.save(user);
 
     return {
       token,
@@ -65,8 +65,6 @@ export class AuthService {
     refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     try {
-      const payload = this.jwt.verify(refreshToken);
-
       const profile = await this.profileRepository.findOne({
         where: { refresh_token: refreshToken },
       });
@@ -97,12 +95,20 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async signup(user: CreateUserDto) {
+  async signup(user: SignupUserDto) {
     const { username, email, password } = user;
     const usertmp = await this.userService.findByEmail(email);
 
     if (usertmp) {
       throw new ForbiddenException('用户已存在');
+    }
+
+    const code = await this.redis.get(email);
+    if (!code) {
+      throw new ForbiddenException('验证码已过期');
+    } else {
+      // 删除 redis 中的验证码
+      this.redis.del(email);
     }
 
     const res = await this.userService.create({

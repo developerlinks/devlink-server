@@ -19,6 +19,12 @@ export class SignupUserDto {
   @IsNotEmpty()
   email: string;
 
+  @ApiProperty({ description: '验证码' })
+  @IsString()
+  @IsNotEmpty()
+  @Length(6)
+  code: string;
+
   @ApiProperty({ description: '密码' })
   @IsString()
   @IsNotEmpty()

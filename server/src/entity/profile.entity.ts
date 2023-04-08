@@ -47,7 +47,7 @@ export class Profile {
   @Exclude()
   accountType: AccountType;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   @Expose()
   refresh_token: string;
 
