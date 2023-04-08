@@ -28,10 +28,9 @@ export function buildConnectionOptions() {
   const envConfig = getEnv(`.env.${process.env.NODE_ENV || 'development'}`);
   // configService
   const config = { ...defaultConfig, ...envConfig };
-
   const logFlag = config['LOG_ON'] === 'true';
-  // const entitiesDir = [path.join(__dirname, 'src', 'entity', '*.entity{.js,.ts}')];
-  const entitiesDir = ['src/entity/*.entity{.js,.ts}'];
+  const entitiesDir = [path.join(__dirname, 'src', 'entity', '*.entity{.js,.ts}')];
+  // const entitiesDir = ['src/entity/*.entity{.js,.ts}'];
 
   console.info('connectionParams', entitiesDir);
 

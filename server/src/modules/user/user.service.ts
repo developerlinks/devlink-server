@@ -10,7 +10,7 @@ import { getUserDto } from './dto/get-user.dto';
 import { Logs } from 'src/entity/logs.entity';
 import { Group } from '../../entity/group.entity';
 import { getServerConfig } from 'ormconfig';
-import { Gender, Profile } from './profile.entity';
+import { Gender, Profile } from '../../entity/profile.entity';
 
 @Injectable()
 export class UserService {

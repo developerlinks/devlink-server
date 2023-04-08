@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { RolesEnum } from 'src/entity/roles.entity';
-import { Gender } from '../profile.entity';
+import { Gender } from '../../../entity/profile.entity';
 
 export class getUserDto {
   @ApiProperty({ description: '页数' })

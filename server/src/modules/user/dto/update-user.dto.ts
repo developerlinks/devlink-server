@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
-import { Gender } from '../profile.entity';
+import { Gender } from '../../../entity/profile.entity';
 
 export class UpdateUserDto {
   @ApiProperty({ description: '用户名' })

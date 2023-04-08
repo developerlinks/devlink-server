@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Roles } from 'src/entity/roles.entity';
 import { Logs } from 'src/entity/logs.entity';
 import { Group } from '../../entity/group.entity';
-import { Profile } from './profile.entity';
+import { Profile } from 'src/entity/profile.entity';
 import { User } from 'src/entity/user.entity';
 
 @Module({

@@ -5,10 +5,10 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { Profile } from 'src/modules/user/profile.entity';
+import { Profile } from 'src/entity/profile.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/entity/user.entity';
+import { User } from '../../src/entity/user.entity';
 @Injectable()
 export class AuthService {
   constructor(

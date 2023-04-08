@@ -34,6 +34,6 @@ jobs:
           cd /home/ubuntu/devlink/app/devlink
           git pull
           cd server
-          npm ci
+          npm install
           npm run build
-          pm2 restart devlink
+          pm2 start devlink

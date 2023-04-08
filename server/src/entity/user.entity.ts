@@ -14,7 +14,7 @@ import {
 } from 'typeorm';
 import { Logs } from 'src/entity/logs.entity';
 import { Material } from 'src/entity/material.entity';
-import { Profile } from 'src/modules/user/profile.entity';
+import { Profile } from 'src/entity/profile.entity';
 import { Group } from './group.entity';
 import { Like } from './like.entity';
 import { Follow } from './follow.entity';

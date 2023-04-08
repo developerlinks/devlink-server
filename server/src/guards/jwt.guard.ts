@@ -21,7 +21,8 @@ export class JwtGuard extends AuthGuard('jwt') {
       throw new UnauthorizedException();
     }
     const payload = await verify(token, this.configService.get(ConfigEnum.SECRET));
-    const { email } = payload;
+    // TODO: FIX
+    const { email } = payload as { email: string };
     const tokenCache = email ? await this.redis.get(email) : null;
     if (!payload || !email || tokenCache !== token) {
       throw new UnauthorizedException();
