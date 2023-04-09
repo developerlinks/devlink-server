@@ -27,7 +27,7 @@ export class AuthService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async signin(email: string, password: string) {
+  async signInByEmailAndPassword(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new ForbiddenException('用户不存在，请注册');
@@ -39,7 +39,46 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new ForbiddenException('用户名或者密码错误');
     }
+    const { token, refreshToken } = await this.jwtToken(user);
 
+    user.profile.refreshToken = refreshToken;
+    // 180 days
+    user.profile.refreshTokenExpiresAt = Number(new Date(Date.now() + 180 * 24 * 60 * 60 * 1000));
+
+    await this.userRepository.save(user);
+    return {
+      token,
+      refreshToken,
+    };
+  }
+
+  async signInByEmailAndCode(email: string, code: string) {
+    const user = await this.userService.findByEmail(email);
+    if (!user) {
+      throw new ForbiddenException('用户不存在，请注册');
+    }
+
+    const getCode = await this.redis.get(`${email}_code`);
+    if (!code || code !== getCode) {
+      throw new ForbiddenException('验证码已过期');
+    } else {
+      this.redis.del(`${email}_code`);
+    }
+
+    const { token, refreshToken } = await this.jwtToken(user);
+
+    user.profile.refreshToken = refreshToken;
+    // 180 days
+    user.profile.refreshTokenExpiresAt = Number(new Date(Date.now() + 180 * 24 * 60 * 60 * 1000));
+
+    await this.userRepository.save(user);
+    return {
+      token,
+      refreshToken,
+    };
+  }
+
+  async jwtToken(user: User) {
     const token = await this.jwt.signAsync(
       {
         userId: user.id,
@@ -59,19 +98,11 @@ export class AuthService {
       },
       { expiresIn: '180 days' },
     );
-
-    user.profile.refreshToken = refreshToken;
-    // 180 days
-    user.profile.refreshTokenExpiresAt = Number(new Date(Date.now() + 180 * 24 * 60 * 60 * 1000));
-
-    await this.userRepository.save(user);
-
     return {
       token,
       refreshToken,
     };
   }
-
   async refreshAccessToken(
     refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {

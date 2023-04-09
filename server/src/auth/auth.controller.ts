@@ -12,7 +12,7 @@ import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AuthService } from './auth.service';
-import { SigninUserDto } from './dto/signin-user.dto';
+import { SignInByEmailAndPassowrdDto, SignInByEmailAndCodeDto } from './dto/signin-user.dto';
 import { EmailService } from '../tools/mail/mail.service';
 import { ApiOperation, ApiOkResponse, ApiBody, ApiTags } from '@nestjs/swagger';
 import { SignupUserDto } from './dto/signup-user.dto';
@@ -29,11 +29,27 @@ export class AuthController {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  @ApiOperation({ summary: '登录' })
-  @Post('/signin')
-  async signin(@Body() dto: SigninUserDto) {
+  @ApiOperation({ summary: '邮箱&密码 登录' })
+  @Post('/signin_by_password')
+  async signInByEmailAndPassword(@Body() dto: SignInByEmailAndPassowrdDto) {
     const { email, password } = dto;
-    const { token, refreshToken } = await this.authService.signin(email, password);
+    const { token, refreshToken } = await this.authService.signInByEmailAndPassword(
+      email,
+      password,
+    );
+    // 设置token
+    await this.redis.set(`${email}_token`, token, 'EX', 24 * 60 * 60);
+    return {
+      access_token: token,
+      refreshToken,
+    };
+  }
+
+  @ApiOperation({ summary: '邮箱&验证码 登录' })
+  @Post('/signin_by_code')
+  async signInByEmailAndcode(@Body() dto: SignInByEmailAndCodeDto) {
+    const { email, code } = dto;
+    const { token, refreshToken } = await this.authService.signInByEmailAndCode(email, code);
     // 设置token
     await this.redis.set(`${email}_token`, token, 'EX', 24 * 60 * 60);
     return {
