@@ -21,7 +21,7 @@ services:
     ports:
       - 8080:8080
 
-  redis: # 新添加的 Redis 服务
+  redis:
     image: redis
     restart: always
     ports:

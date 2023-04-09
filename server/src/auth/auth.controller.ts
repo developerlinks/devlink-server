@@ -35,7 +35,7 @@ export class AuthController {
     const { email, password } = dto;
     const { token, refreshToken } = await this.authService.signin(email, password);
     // 设置token
-    this.redis.set(`${email}_token`, token, 'EX', 24 * 60 * 60);
+    await this.redis.set(`${email}_token`, token, 'EX', 24 * 60 * 60);
     return {
       access_token: token,
       refreshToken,

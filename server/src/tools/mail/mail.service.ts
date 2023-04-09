@@ -23,7 +23,7 @@ export class EmailService {
         subject: 'devlink 验证码',
         html: getChineseTemplate(code, getCurrentTime()),
       });
-      this.redis.set(`${to}_code`, code, 'EX', 60 * 30);
+      await this.redis.set(`${to}_code`, code, 'EX', 60 * 30);
     } catch (error) {
       console.info('send email error: ', error);
     }

@@ -1,4 +1,4 @@
-import { Injectable, Put } from '@nestjs/common';
+import { ForbiddenException, Injectable, Put } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -11,6 +11,8 @@ import { Logs } from 'src/entity/logs.entity';
 import { Group } from '../../entity/group.entity';
 import { getServerConfig } from 'ormconfig';
 import { Gender, Profile } from '../../entity/profile.entity';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 
 @Injectable()
 export class UserService {
@@ -18,6 +20,7 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Logs) private readonly logsRepository: Repository<Logs>,
     @InjectRepository(Roles) private readonly rolesRepository: Repository<Roles>,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async create(user: Partial<User>) {
@@ -112,6 +115,23 @@ export class UserService {
     return this.userRepository.save(newUser);
   }
 
+  async updatePassword(passwordDto: UpdatePasswordDto) {
+    const { email, code, password } = passwordDto;
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    const getCode = await this.redis.get(`${email}_code`);
+    if (!code || code !== getCode) {
+      throw new ForbiddenException('验证码已过期');
+    } else {
+      this.redis.del(`${email}_code`);
+    }
+
+    user.password = await argon2.hash(password);
+    return this.userRepository.save(user);
+  }
+
   async remove(id: string) {
     const user = await this.userRepository.findOne({ where: { id } });
     return this.userRepository.remove(user);
@@ -132,12 +152,6 @@ export class UserService {
         stars: true,
       },
     });
-  }
-
-  async updatePassword(id: string, password: string) {
-    const user = await this.findOneById(id);
-    user.password = await argon2.hash(password);
-    return this.userRepository.save(user);
   }
 
   findLogByGroup(id: number) {

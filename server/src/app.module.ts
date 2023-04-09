@@ -59,8 +59,7 @@ const schema = Joi.object({
         const host = configService.get(ConfigEnum.REDIS_HOST);
         const port = configService.get(ConfigEnum.REDIS_PORT);
         const password = configService.get(ConfigEnum.REDIS_PASSWORD);
-        // ${password}@
-        const url = password ? `redis://${host}:${port}` : `redis://${host}:${port}`;
+        const url = password ? `redis://${password}@${host}:${port}` : `redis://${host}:${port}`;
         return {
           config: {
             url,

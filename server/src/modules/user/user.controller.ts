@@ -27,8 +27,7 @@ import { CreateUserPipe } from './pipes/create-user.pipe';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateGroupDto } from '../group/dto/create-group.dto';
-import { CreateGroupPipe } from '../group/pipe/create-group.pipe';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @ApiTags('用户')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -87,6 +86,12 @@ export class UserController {
     }
 
     return this.userService.update(id, updateUserDto);
+  }
+
+  @ApiOperation({ summary: '更改/找回 密码' })
+  @Post('updatePassword')
+  async updatePassword(@Body() password: UpdatePasswordDto): Promise<User> {
+    return this.userService.updatePassword(password);
   }
 
   @ApiOperation({ summary: '删除用户' })
