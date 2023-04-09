@@ -50,7 +50,7 @@ export class User {
   @OneToOne(() => Profile, profile => profile.user, { cascade: true })
   profile: Profile;
 
-  @OneToMany(() => Group, group => group.user)
+  @OneToMany(() => Group, group => group.user, { cascade: true, onDelete: 'CASCADE' })
   group: Group[];
 
   @OneToMany(() => Material, material => material.author)
@@ -58,6 +58,11 @@ export class User {
 
   @OneToMany(() => Like, like => like.user, { cascade: true })
   likes: Like[];
+
+  // 用户收藏的物料
+  @ManyToMany(() => Material, material => material.stars)
+  @JoinTable({ name: 'users_stars' })
+  stars: Material[];
 
   @OneToMany(() => Follow, follow => follow.follower, { cascade: true })
   followers: Follow[];

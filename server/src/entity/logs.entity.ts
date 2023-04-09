@@ -1,16 +1,17 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { User } from './user.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class Logs {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string = uuidv4();
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   @Column()
   path: string;
-
-  @Column()
-  methods: string;
 
   @Column()
   data: string;

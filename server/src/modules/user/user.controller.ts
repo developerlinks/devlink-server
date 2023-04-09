@@ -69,13 +69,8 @@ export class UserController {
   @ApiOperation({ summary: '查询所有用户' })
   @Get('findall')
   getUsers(@Query() query: getUserDto) {
+    console.log(query);
     return this.userService.findAll(query);
-  }
-
-  @ApiOperation({ summary: '根据 ID 查询用户' })
-  @Get('getuser/:id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
   }
 
   @ApiOperation({ summary: '更新自己的信息' })
@@ -101,28 +96,5 @@ export class UserController {
   removeUser(@Param('id') id: string, @Req() req) {
     //TODO: 判断是否是管理员
     return this.userService.remove(id);
-  }
-
-  // @ApiOperation({ summary: '查询用户日志' })
-  // @Get('logsbygroup/:id')
-  // findLogById(@Param('id') id: number) {
-  //   return this.userService.findLogByGroup(id);
-  // }
-
-  @ApiOperation({ summary: '查询用户日志' })
-  @Get('logs/:id')
-  getUserLogs(@Param('id') id: string) {
-    return this.userService.findUserLogs(id);
-  }
-
-  @ApiOperation({ summary: '添加分组' })
-  @Post('group/:id')
-  @UseGuards(JwtGuard)
-  @ApiBearerAuth()
-  addGroup(@Body(CreateGroupPipe) dto: CreateGroupDto, @Param('id') id: string, @Req() req) {
-    if (id !== req.user.userId) {
-      throw new UnauthorizedException();
-    }
-    return this.userService.addGroup(id, dto);
   }
 }

@@ -10,6 +10,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../src/entity/user.entity';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { SignupUserDto } from './dto/signup-user.dto';
+
+export interface JwtPayload {
+  userId: number;
+  email: string;
+  username: string;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -33,11 +40,16 @@ export class AuthService {
       throw new ForbiddenException('用户名或者密码错误');
     }
 
-    const token = await this.jwt.signAsync({
-      userId: user.id,
-      email: user.email,
-      username: user.username,
-    });
+    const token = await this.jwt.signAsync(
+      {
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+      },
+      {
+        expiresIn: '1d',
+      },
+    );
 
     const refreshToken = this.jwt.sign(
       {
@@ -48,10 +60,9 @@ export class AuthService {
       { expiresIn: '180 days' },
     );
 
-    user.profile.refresh_token = refreshToken;
-    user.profile.refresh_token_expires_at = Number(
-      new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
-    );
+    user.profile.refreshToken = refreshToken;
+    // 180 days
+    user.profile.refreshTokenExpiresAt = Number(new Date(Date.now() + 180 * 24 * 60 * 60 * 1000));
 
     await this.userRepository.save(user);
 
@@ -66,10 +77,10 @@ export class AuthService {
   ): Promise<{ accessToken: string; refreshToken: string }> {
     try {
       const profile = await this.profileRepository.findOne({
-        where: { refresh_token: refreshToken },
+        where: { refreshToken: refreshToken },
       });
 
-      if (!profile || profile.refresh_token_expires_at < Number(new Date())) {
+      if (!profile || profile.refreshTokenExpiresAt < Number(new Date())) {
         throw new UnauthorizedException('Invalid or expired refresh token.');
       }
 
@@ -88,8 +99,9 @@ export class AuthService {
         id: user.profile.id,
       },
     });
-    profile.refresh_token = refreshToken;
-    profile.refresh_token_expires_at = Number(new Date(Date.now() + 180 * 24 * 60 * 60 * 1000));
+    profile.refreshToken = refreshToken;
+    // 180天后过期
+    profile.refreshTokenExpiresAt = Number(new Date(Date.now() + 180 * 24 * 60 * 60 * 1000));
     await this.profileRepository.save(profile);
 
     return { accessToken, refreshToken };
@@ -103,12 +115,11 @@ export class AuthService {
       throw new ForbiddenException('用户已存在');
     }
 
-    const code = await this.redis.get(email);
+    const code = await this.redis.get(`${email}_code`);
     if (!code) {
       throw new ForbiddenException('验证码已过期');
     } else {
-      // 删除 redis 中的验证码
-      this.redis.del(email);
+      this.redis.del(`${email}_code`);
     }
 
     const res = await this.userService.create({

@@ -1,9 +1,5 @@
 # devlink
 
-# 功能设计
+> More modularity and module reuse, reducing code.
 
-## 用户管理
-
-### 用户角色
-
-
+> 更多的模块化和模块复用，更少的代码。

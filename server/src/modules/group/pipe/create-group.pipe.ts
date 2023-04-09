@@ -5,9 +5,6 @@ import { Group } from '../../../entity/group.entity';
 @Injectable()
 export class CreateGroupPipe implements PipeTransform {
   transform(value: Group, metadata: ArgumentMetadata) {
-    if (!value.create_at) {
-      value.create_at = Date.now() + '';
-    }
     if (!value.description) {
       value.description = '这是一个描述...';
     }

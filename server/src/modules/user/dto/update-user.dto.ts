@@ -13,11 +13,6 @@ export class UpdateUserDto {
   @IsEmail()
   email?: string;
 
-  @ApiProperty({ description: '密码' })
-  @IsOptional()
-  @IsString()
-  password?: string;
-
   @ApiProperty({ description: '性别', enum: Gender }) // 指定枚举类型
   @IsOptional()
   @IsEnum(Gender)

@@ -12,6 +12,7 @@ import { EmailService } from '../tools/mail/mail.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entity/user.entity';
 import { Profile } from 'src/entity/profile.entity';
+import { UserService } from 'src/modules/user/user.service';
 
 @Global()
 @Module({

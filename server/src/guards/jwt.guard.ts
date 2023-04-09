@@ -5,6 +5,7 @@ import { verify } from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
+import { JwtPayload } from 'src/auth/auth.service';
 
 @Injectable()
 export class JwtGuard extends AuthGuard('jwt') {
@@ -16,14 +17,12 @@ export class JwtGuard extends AuthGuard('jwt') {
     // custom logic can go here
     const request = context.switchToHttp().getRequest();
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
-    // const cacheToken = this.redis.get(token);
     if (!token) {
       throw new UnauthorizedException();
     }
     const payload = await verify(token, this.configService.get(ConfigEnum.SECRET));
-    // TODO: FIX
-    const { email } = payload as { email: string };
-    const tokenCache = email ? await this.redis.get(email) : null;
+    const { email } = payload as JwtPayload;
+    const tokenCache = email ? await this.redis.get(`${email}_token`) : null;
     if (!payload || !email || tokenCache !== token) {
       throw new UnauthorizedException();
     }
@@ -32,6 +31,3 @@ export class JwtGuard extends AuthGuard('jwt') {
     return parentCanActivate;
   }
 }
-
-// 装饰器
-// @JwtGuard()

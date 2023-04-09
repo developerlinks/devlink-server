@@ -8,11 +8,11 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { connectionParams } from '../ormconfig';
 import { LogsModule } from './modules/logsM/logs.module';
 import { RolesModule } from './modules/roles/roles.module';
-import { MenusModule } from './modules/menus/menus.module';
 import { AuthModule } from './auth/auth.module';
 import { MaterialModule } from './modules/materials/material.module';
 import { ConfigEnum } from './enum/config.enum';
 import { PolisherModule } from './tools/textPolisher/text-polisher.module';
+import { GroupModule } from './modules/group/group.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 const schema = Joi.object({
@@ -61,7 +61,6 @@ const schema = Joi.object({
         const password = configService.get(ConfigEnum.REDIS_PASSWORD);
         // ${password}@
         const url = password ? `redis://${host}:${port}` : `redis://${host}:${port}`;
-        console.info('url', url);
         return {
           config: {
             url,
@@ -79,7 +78,7 @@ const schema = Joi.object({
     LogsModule,
     RolesModule,
     AuthModule,
-    MenusModule,
+    GroupModule,
     MaterialModule,
     PolisherModule,
   ],

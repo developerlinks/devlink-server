@@ -7,6 +7,7 @@ import {
   OneToMany,
   JoinTable,
   PrimaryColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Material } from './material.entity';
@@ -23,17 +24,15 @@ export class Group {
   @Column()
   description: string;
 
-  @Column()
-  create_at: string;
+  @CreateDateColumn()
+  createdAt: Date;
 
   @ManyToOne(() => User, user => user.group, {
-    cascade: true,
     onDelete: 'CASCADE',
   })
   user: User;
 
   @OneToMany(() => Material, material => material.group, {
-    cascade: true,
     onDelete: 'SET NULL',
   })
   material: Material[];
@@ -42,7 +41,6 @@ export class Group {
     this.id = uuidv4();
     this.name = '';
     this.description = '';
-    this.create_at = new Date().toISOString();
     Object.assign(this, partial);
   }
 }

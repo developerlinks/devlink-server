@@ -2,11 +2,13 @@ import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Expose } from 'class-transformer';
 import { User } from 'src/entity/user.entity';
-import { Menu } from 'src/entity/menu.entity';
 
 export enum RolesEnum {
+  // super
   super,
+  // admin
   admin,
+  // user
   user,
 }
 
@@ -23,8 +25,4 @@ export class Roles {
   @ManyToMany(() => User, user => user.roles)
   @Expose()
   users: User[];
-
-  @ManyToMany(() => Menu, menu => menu.role)
-  @Expose()
-  menus: Menu[];
 }

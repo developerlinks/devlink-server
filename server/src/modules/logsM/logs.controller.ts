@@ -1,9 +1,13 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
+  Param,
   Post,
+  UseFilters,
   UseGuards,
+  UseInterceptors,
   // UseInterceptors,
 } from '@nestjs/common';
 import { JwtGuard } from 'src/guards/jwt.guard';
@@ -12,41 +16,26 @@ import { Expose } from 'class-transformer';
 // import { SerializeInterceptor } from '../interceptors/serialize.interceptor';
 import { Logs } from '../../entity/logs.entity';
 import { Action } from 'src/enum/action.enum';
-import { ApiTags } from '@nestjs/swagger';
-
-class LogsDto {
-  @IsString()
-  @IsNotEmpty()
-  msg: string;
-
-  @IsString()
-  id: string;
-
-  @IsString()
-  name: string;
-}
-
-class PublicLogsDto {
-  @Expose()
-  msg: string;
-
-  @Expose()
-  name: string;
-}
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { TypeormFilter } from 'src/filters/typeorm.filter';
+import { LogsService } from './logs.service';
 
 @ApiTags('logs')
 @Controller('logs')
-// UserInterceptor(new SerializationInterceptor(DTO))
+@UseInterceptors(ClassSerializerInterceptor)
+@UseFilters(new TypeormFilter())
 export class LogsController {
-  @Get()
-  getTest() {
-    return 'test';
+  constructor(private readonly logsService: LogsService) {}
+
+  @ApiOperation({ summary: '查询用户日志' })
+  @Get(':id')
+  getUserLogs(@Param('id') id: string) {
+    return this.logsService.findById(id);
   }
 
-  @Post()
-  // @UseInterceptors(new SerializeInterceptor(PublicLogsDto))
-  postTest(@Body() dto: LogsDto) {
-    console.log('🚀 ~ file: logs.controller.ts ~ line 15 ~ LogsController ~ postTest ~ dto', dto);
-    return dto;
-  }
+  // // 添加日志
+  // @Post()
+  // addLogs(@Body() body: CreateLogsDto) {
+  //   return this.logsService.create(body);
+  // }
 }

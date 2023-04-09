@@ -1,4 +1,12 @@
-import { Column, Entity, ManyToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Material } from './material.entity';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,11 +21,11 @@ export class Tag {
   @Column()
   description: string;
 
-  @Column()
-  create_at: string;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  @Column()
-  update_at: string;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @Column()
   count: number;

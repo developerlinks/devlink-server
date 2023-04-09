@@ -4,32 +4,30 @@ import { RolesEnum } from 'src/entity/roles.entity';
 import { Gender } from '../../../entity/profile.entity';
 
 export class getUserDto {
-  @ApiProperty({ description: '页数' })
+  @ApiProperty({ description: '页数', required: false })
   @IsOptional()
-  @IsNumber()
   page?: number;
 
-  @ApiProperty({ description: '每页的数量' })
+  @ApiProperty({ description: '每页的数量', required: false })
   @IsOptional()
-  @IsNumber()
   limit?: number;
 
-  @ApiProperty({ description: '用户名' })
+  @ApiProperty({ description: '用户名', required: false })
   @IsOptional()
   @IsString()
   username?: string;
 
-  @ApiProperty({ description: '邮箱' })
+  @ApiProperty({ description: '邮箱', required: false })
   @IsOptional()
   @IsString()
   email?: string;
 
-  @ApiProperty({ description: '角色', enum: RolesEnum })
+  @ApiProperty({ description: '角色', enum: RolesEnum, required: false })
   @IsOptional()
   @IsString()
   role?: number;
 
-  @ApiProperty({ description: '性别', enum: Gender }) // 指定枚举类型
+  @ApiProperty({ description: '性别', enum: Gender, required: false })
   @IsOptional()
   @IsEnum(Gender)
   gender?: Gender;

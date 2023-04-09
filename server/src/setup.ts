@@ -38,7 +38,7 @@ export const setupApp = (app: INestApplication) => {
     }),
   );
   const isProd = process.env.NODE_ENV === 'production';
-  if (!isProd) {
+  if (isProd) {
     const adminAccountService = app.get(UserService);
     adminAccountService.createAdminAccount();
   }

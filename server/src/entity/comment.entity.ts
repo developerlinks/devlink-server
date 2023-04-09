@@ -5,6 +5,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Material } from './material.entity';
@@ -17,8 +18,8 @@ export class Comment {
   @Column()
   content: string;
 
-  @Column()
-  created_at: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
   @ManyToOne(() => Material, material => material.comments)
   materials: Material;

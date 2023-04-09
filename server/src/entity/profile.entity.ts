@@ -28,7 +28,6 @@ export class Profile {
   id: string;
 
   @Column({ type: 'enum', enum: Gender, default: Gender.OTHER })
-  @Exclude()
   gender: Gender;
 
   @Column({ default: '' })
@@ -40,20 +39,19 @@ export class Profile {
   address: string;
 
   @Column({ default: '' })
-  @Exclude()
+  @Expose()
   description: string;
 
   @Column({ type: 'enum', enum: AccountType, default: AccountType.EMAIL })
-  @Exclude()
   accountType: AccountType;
 
   @Column({ type: 'text', nullable: true })
-  @Expose()
-  refresh_token: string;
+  @Exclude()
+  refreshToken: string;
 
   @Column({ type: 'bigint', nullable: true })
-  @Expose()
-  refresh_token_expires_at: number;
+  @Exclude()
+  refreshTokenExpiresAt: number;
 
   @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn()
@@ -67,7 +65,7 @@ export class Profile {
     this.address = partial?.address ?? '';
     this.description = partial?.description ?? '';
     this.accountType = partial?.accountType ?? AccountType.EMAIL;
-    this.refresh_token = partial?.refresh_token ?? '';
-    this.refresh_token_expires_at = partial?.refresh_token_expires_at ?? 0;
+    this.refreshToken = partial?.refreshToken ?? '';
+    this.refreshTokenExpiresAt = partial?.refreshTokenExpiresAt ?? 0;
   }
 }

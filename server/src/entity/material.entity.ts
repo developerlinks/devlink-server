@@ -3,6 +3,7 @@ import { group } from 'console';
 import { User } from 'src/entity/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
@@ -11,6 +12,7 @@ import {
   OneToMany,
   PrimaryColumn,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Comment } from './comment.entity';
@@ -53,24 +55,12 @@ export class Material {
   isPrivate: boolean;
 
   @Expose()
-  @Column()
-  create_time: string;
+  @CreateDateColumn()
+  createdAt: Date;
 
   @Expose()
-  @Column()
-  update_time: string;
-
-  @Expose()
-  @Column()
-  views: number;
-
-  @Expose()
-  @Column()
-  likes_count: number;
-
-  @Expose()
-  @Column()
-  comments_count: number;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @ManyToOne(() => User, user => user.materials, { cascade: true, onDelete: 'SET NULL' })
   author: User;
@@ -80,13 +70,17 @@ export class Material {
   @JoinTable({ name: 'material_tag' })
   tag: Tag[];
 
-  @ManyToOne(() => Group, group => group.material)
+  @ManyToOne(() => Group, group => group.material, { cascade: true })
   @JoinTable({ name: 'material_group' })
   group: Group[];
 
-  @OneToMany(() => Comment, comment => comment)
+  @OneToMany(() => Comment, comment => comment.materials)
   comments: Comment[];
 
   @OneToMany(() => Like, like => like.materials)
   likes: Like[];
+
+  // 用户收藏的物料
+  @ManyToMany(() => User, user => user.stars)
+  stars: User[];
 }

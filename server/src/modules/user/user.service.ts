@@ -18,7 +18,6 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Logs) private readonly logsRepository: Repository<Logs>,
     @InjectRepository(Roles) private readonly rolesRepository: Repository<Roles>,
-    @InjectRepository(Group) private readonly groupRepository: Repository<Group>,
   ) {}
 
   async create(user: Partial<User>) {
@@ -35,7 +34,7 @@ export class UserService {
     }
     const userTmp = await this.userRepository.create(user);
     userTmp.password = await argon2.hash(userTmp.password);
-    const group = new Group();
+    const group = new Group({ name: '默认分组', description: '默认分组' });
     const profile = new Profile({ gender: Gender.OTHER });
     userTmp.group = [group];
     userTmp.profile = profile;
@@ -89,14 +88,14 @@ export class UserService {
   find(username: string) {
     return this.userRepository.findOne({
       where: { username },
-      relations: ['roles', 'roles.menus'],
+      relations: ['roles'],
     });
   }
 
   findByEmail(email: string) {
     return this.userRepository.findOne({
       where: { email },
-      relations: ['roles', 'roles.menus', 'profile'],
+      relations: ['roles', 'profile'],
     });
   }
 
@@ -109,24 +108,13 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     const userTemp = await this.findProfile(id);
 
-    if (updateUserDto.gender !== undefined) userTemp.profile.gender = updateUserDto.gender;
-    if (updateUserDto.photo !== undefined) userTemp.profile.photo = updateUserDto.photo;
-    if (updateUserDto.address !== undefined) userTemp.profile.address = updateUserDto.address;
-    if (updateUserDto.description !== undefined)
-      userTemp.profile.description = updateUserDto.description;
-
     const newUser = this.userRepository.merge(userTemp, updateUserDto);
     return this.userRepository.save(newUser);
   }
 
   async remove(id: string) {
-    // return this.userRepository.delete(id);
-    const user = await this.findOne(id);
+    const user = await this.userRepository.findOne({ where: { id } });
     return this.userRepository.remove(user);
-  }
-
-  findOne(id: string) {
-    return this.userRepository.findOne({ where: { id } });
   }
 
   findProfile(id: string) {
@@ -136,6 +124,12 @@ export class UserService {
       },
       relations: {
         profile: true,
+        group: true,
+        materials: true,
+        likes: true,
+        followers: true,
+        following: true,
+        stars: true,
       },
     });
   }
@@ -144,18 +138,6 @@ export class UserService {
     const user = await this.findOneById(id);
     user.password = await argon2.hash(password);
     return this.userRepository.save(user);
-  }
-
-  async findUserLogs(id: string) {
-    const user = await this.findOneById(id);
-    return this.logsRepository.findOne({
-      where: {
-        user,
-      },
-      relations: {
-        user: true,
-      },
-    });
   }
 
   findLogByGroup(id: number) {
@@ -175,11 +157,10 @@ export class UserService {
 
   async createAdminAccount() {
     const config = getServerConfig();
-    const adminEmail = 'devlinkroot@163.com';
+    const adminEmail = config['user'] as string;
     const adminUserName = 'devlinkroot';
     const adminPassword = config['DB_PASSWORD'] as string;
 
-    // 检查管理员账号是否已存在
     const existingAdmin = await this.userRepository.findOne({ where: { email: adminEmail } });
     if (!existingAdmin) {
       // 创建管理员账号
@@ -197,16 +178,5 @@ export class UserService {
         console.log('Failed to create admin account: ', error.message);
       }
     }
-  }
-
-  async addGroup(id: string, group: Partial<Group>) {
-    const usertmp = await this.userRepository.findOne({
-      where: {
-        id,
-      },
-    });
-    group.user = usertmp;
-    const groupTmp = await this.groupRepository.create(group);
-    return this.groupRepository.save(groupTmp);
   }
 }
