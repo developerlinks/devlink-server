@@ -19,6 +19,7 @@ import { Group } from './group.entity';
 import { Like } from './like.entity';
 import { Follow } from './follow.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Tag } from './tag.entity';
 
 @Entity()
 export class User {
@@ -69,4 +70,7 @@ export class User {
 
   @OneToMany(() => Follow, follow => follow.following, { cascade: true })
   following: Follow[];
+
+  @OneToMany(() => Tag, tag => tag.user, { cascade: true })
+  tags: Tag[];
 }

@@ -25,24 +25,24 @@ export enum Gender {
 export class Profile {
   @PrimaryColumn('uuid')
   @Expose()
-  id: string;
+  id: string = uuidv4();
 
-  @Column({ type: 'enum', enum: Gender, default: Gender.OTHER })
+  @Column({ type: 'enum', enum: Gender })
   gender: Gender;
 
-  @Column({ default: '' })
   @Expose()
+  @Column({ nullable: true })
   photo: string;
 
-  @Column({ default: '' })
+  @Column()
   @Expose()
   address: string;
 
-  @Column({ default: '' })
+  @Column()
   @Expose()
   description: string;
 
-  @Column({ type: 'enum', enum: AccountType, default: AccountType.EMAIL })
+  @Column({ type: 'enum', enum: AccountType })
   accountType: AccountType;
 
   @Column({ type: 'text', nullable: true })
@@ -58,14 +58,12 @@ export class Profile {
   @Expose()
   user: User;
 
-  constructor(partial?: Partial<Profile>) {
-    this.id = uuidv4();
-    this.gender = partial?.gender ?? Gender.OTHER;
-    this.photo = partial?.photo ?? '';
-    this.address = partial?.address ?? '';
-    this.description = partial?.description ?? '';
-    this.accountType = partial?.accountType ?? AccountType.EMAIL;
-    this.refreshToken = partial?.refreshToken ?? '';
-    this.refreshTokenExpiresAt = partial?.refreshTokenExpiresAt ?? 0;
+  constructor(profile?: Partial<Profile>) {
+    this.gender = profile?.gender ?? Gender.OTHER;
+    this.address = profile?.address ?? '';
+    this.description = profile?.description ?? '';
+    this.accountType = profile?.accountType ?? AccountType.EMAIL;
+    this.refreshToken = profile?.refreshToken ?? '';
+    this.refreshTokenExpiresAt = profile?.refreshTokenExpiresAt ?? 0;
   }
 }

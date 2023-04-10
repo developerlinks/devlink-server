@@ -32,7 +32,7 @@ export class Group {
   })
   user: User;
 
-  @OneToMany(() => Material, material => material.group, {
+  @OneToMany(() => Material, material => material.groups, {
     onDelete: 'SET NULL',
   })
   material: Material[];

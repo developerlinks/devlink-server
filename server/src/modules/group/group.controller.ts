@@ -27,14 +27,14 @@ export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
   @ApiOperation({ summary: '添加分组' })
-  @Post(':id')
+  @Post('')
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  addGroup(@Body(CreateGroupPipe) dto: CreateGroupDto, @Param('id') id: string, @Req() req) {
-    if (id !== req.user.userId) {
+  addGroup(@Body(CreateGroupPipe) dto: CreateGroupDto, @Req() req) {
+    if (!req.user.userId) {
       throw new UnauthorizedException();
     }
-    return this.groupService.addGroup(id, dto);
+    return this.groupService.addGroup(req.user.userId, dto);
   }
 
   @Get()

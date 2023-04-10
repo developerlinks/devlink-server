@@ -13,6 +13,7 @@ import { MaterialModule } from './modules/materials/material.module';
 import { ConfigEnum } from './enum/config.enum';
 import { PolisherModule } from './tools/textPolisher/text-polisher.module';
 import { GroupModule } from './modules/group/group.module';
+import { TagModule } from './modules/tag/tag.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 const schema = Joi.object({
@@ -80,6 +81,7 @@ const schema = Joi.object({
     GroupModule,
     MaterialModule,
     PolisherModule,
+    TagModule,
   ],
   controllers: [],
   providers: [Logger],

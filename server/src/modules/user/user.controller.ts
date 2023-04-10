@@ -68,7 +68,6 @@ export class UserController {
   @ApiOperation({ summary: '查询所有用户' })
   @Get('findall')
   getUsers(@Query() query: getUserDto) {
-    console.log(query);
     return this.userService.findAll(query);
   }
 

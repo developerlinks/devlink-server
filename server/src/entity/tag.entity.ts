@@ -3,12 +3,15 @@ import {
   CreateDateColumn,
   Entity,
   ManyToMany,
+  ManyToOne,
+  OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Material } from './material.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { User } from './user.entity';
 
 @Entity()
 export class Tag {
@@ -27,9 +30,9 @@ export class Tag {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
-  count: number;
-
-  @ManyToMany(() => Material, material => material.tag)
+  @ManyToMany(() => Material, material => material.tags)
   material: Material[];
+
+  @ManyToOne(() => User, user => user.tags, { onDelete: 'SET NULL' })
+  user: User;
 }
