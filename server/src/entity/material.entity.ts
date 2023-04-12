@@ -27,11 +27,11 @@ export class Material {
   id: string = uuidv4();
 
   @Expose()
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @Expose()
-  @Column()
+  @Column({ unique: true })
   npmName: string;
 
   @Expose()
@@ -39,15 +39,15 @@ export class Material {
   version: string;
 
   @Expose()
-  @Column()
+  @Column({ nullable: true })
   installCommand: string;
 
   @Expose()
-  @Column()
+  @Column({ nullable: true })
   startCommand: string;
 
   @Expose()
-  @Column()
+  @Column({ nullable: true })
   ignore: string;
 
   @Expose()
@@ -63,16 +63,16 @@ export class Material {
   updatedAt: Date;
 
   @ManyToOne(() => User, user => user.materials, { cascade: true, onDelete: 'SET NULL' })
-  author: User;
+  user: User;
 
   @ManyToMany(() => Tag, tag => tag.material)
   @Expose()
   @JoinTable({ name: 'material_tag' })
-  tag: Tag[];
+  tags: Tag[];
 
   @ManyToOne(() => Group, group => group.material, { cascade: true })
   @JoinTable({ name: 'material_group' })
-  group: Group[];
+  groups: Group[];
 
   @OneToMany(() => Comment, comment => comment.materials)
   comments: Comment[];

@@ -1,32 +1,45 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateMaterialDto {
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   name: string;
 
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   npmName: string;
 
+  @IsString()
   @ApiProperty()
   version: string;
 
-  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
   installCommand: string;
 
-  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
   startCommand: string;
 
   @ApiProperty()
   @IsBoolean()
   isPrivate: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
   ignore?: string;
 
   @ApiProperty()
-  tag?: string[];
+  @IsArray()
+  tagIds?: string[];
 
   @ApiProperty()
-  group?: string[];
+  @IsArray()
+  groupIds?: string[];
 }
