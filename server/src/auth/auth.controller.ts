@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Get,
+  Req,
 } from '@nestjs/common';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 
@@ -64,6 +65,14 @@ export class AuthController {
     @Body('refreshToken') refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     return this.authService.refreshAccessToken(refreshToken);
+  }
+
+  // 退出登录
+  @ApiOperation({ summary: '退出登录' })
+  @Get('/logout')
+  async logout(@Req() req) {
+    const { email } = req.user;
+    return await this.redis.del(`${email}_token`);
   }
 
   @ApiOperation({ summary: '注册' })
