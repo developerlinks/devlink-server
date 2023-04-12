@@ -54,7 +54,7 @@ export class User {
   @OneToMany(() => Group, group => group.user, { cascade: true, onDelete: 'CASCADE' })
   group: Group[];
 
-  @OneToMany(() => Material, material => material.author)
+  @OneToMany(() => Material, material => material.user)
   materials: Material[];
 
   @OneToMany(() => Like, like => like.user, { cascade: true })

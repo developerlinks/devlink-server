@@ -33,8 +33,4 @@ export class TextPolisherService {
 
     return polishedText;
   }
-
-  countTokens(text: string): number {
-    return text.split(' ').length;
-  }
 }

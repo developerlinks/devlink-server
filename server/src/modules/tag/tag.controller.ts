@@ -26,7 +26,7 @@ import { GetTagDto } from './dto/get-tag.dto';
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
-  @ApiOperation({ summary: '添加分组' })
+  @ApiOperation({ summary: '添加标签' })
   @Post('')
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
