@@ -1,9 +1,0 @@
-.materialContainer {
-  display: flex;
-  gap: 10px;
-}
-.navbar {
-  position: fixed;
-  width: 100%;
-  z-index: 100;
-}
