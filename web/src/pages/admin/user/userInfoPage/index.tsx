@@ -7,9 +7,6 @@ import UserInfo from '../info';
 export default function userInfoPage() {
   return (
     <div className={styles.userInfoPage}>
-      <div className={styles.navbar}>
-        <Navbar show={true} />
-      </div>
       <div className={styles.userInfoContainer}>
         <UserInfo />
       </div>

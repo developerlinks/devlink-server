@@ -44,7 +44,6 @@ export default function LoginForm() {
   function login(params) {
     setErrorMessage('');
     setLoading(true);
-    console.log('params', params);
     loginApi(params)
       .then((res) => {
         const { data, status } = res.data;
@@ -85,15 +84,15 @@ export default function LoginForm() {
         className={styles['login-form']}
         layout="vertical"
         ref={formRef}
-        initialValues={{ userName: 'admin', password: 'admin' }}
+        // initialValues={{ userName: 'admin', password: 'admin' }}
       >
         <Form.Item
-          field="username"
-          rules={[{ required: true, message: t['login.form.userName.errMsg'] }]}
+          field="email"
+          rules={[{ required: true, message: t['login.form.email.errMsg'] }]}
         >
           <Input
             prefix={<IconUser />}
-            placeholder={t['login.form.userName.placeholder']}
+            placeholder={t['login.form.email.placeholder']}
             onPressEnter={onSubmitClick}
           />
         </Form.Item>

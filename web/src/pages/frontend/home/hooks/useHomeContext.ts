@@ -1,5 +1,5 @@
+import { GlobalContext } from '@/context';
 import { useContext } from 'react';
-import { GlobalContext } from '../../../context';
 
 interface HomeContext {
   theme: string;

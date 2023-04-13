@@ -13,79 +13,114 @@ export type IRoute = AuthParams & {
 
 export const routes: IRoute[] = [
   {
-    name: 'menu.dashboard',
-    key: 'dashboard',
+    name: 'frontend',
+    key: 'frontend',
+    ignore: true,
     children: [
       {
-        name: 'menu.dashboard.workplace',
-        key: 'dashboard/workplace',
+        name: 'home',
+        key: 'home',
       },
       {
-        name: 'menu.dashboard.monitor',
-        key: 'dashboard/monitor',
-        requiredPermissions: [
-          { resource: 'menu.dashboard.monitor', actions: ['write'] },
-        ],
+        name: 'auth',
+        key: 'auth',
       },
-    ],
+    ]
   },
   {
-    name: 'menu.visualization',
-    key: 'visualization',
+    name: 'admin',
+    key: 'admin',
     children: [
       {
-        name: 'menu.visualization.dataAnalysis',
-        key: 'visualization/data-analysis',
-        requiredPermissions: [
-          { resource: 'menu.visualization.dataAnalysis', actions: ['read'] },
-        ],
-      },
-      {
-        name: 'menu.visualization.multiDimensionDataAnalysis',
-        key: 'visualization/multi-dimension-data-analysis',
-        requiredPermissions: [
+        name: 'menu.dashboard',
+        key: 'dashboard',
+        children: [
           {
-            resource: 'menu.visualization.dataAnalysis',
-            actions: ['read', 'write'],
+            name: 'menu.dashboard.workplace',
+            key: 'dashboard/workplace',
           },
           {
-            resource: 'menu.visualization.multiDimensionDataAnalysis',
-            actions: ['write'],
+            name: 'menu.dashboard.monitor',
+            key: 'dashboard/monitor',
+            requiredPermissions: [
+              { resource: 'menu.dashboard.monitor', actions: ['write'] },
+            ],
           },
         ],
-        oneOfPerm: true,
-      },
-    ],
-  },
-  {
-    name: 'menu.list',
-    key: 'list',
-    children: [
-      {
-        name: 'menu.list.searchMaterial',
-        key: 'list/search-material',
       },
       {
-        name: 'menu.list.searchUser',
-        key: 'list/search-user',
+        name: 'menu.visualization',
+        key: 'visualization',
+        children: [
+          {
+            name: 'menu.visualization.dataAnalysis',
+            key: 'visualization/data-analysis',
+            requiredPermissions: [
+              { resource: 'menu.visualization.dataAnalysis', actions: ['read'] },
+            ],
+          },
+          {
+            name: 'menu.visualization.multiDimensionDataAnalysis',
+            key: 'visualization/multi-dimension-data-analysis',
+            requiredPermissions: [
+              {
+                resource: 'menu.visualization.dataAnalysis',
+                actions: ['read', 'write'],
+              },
+              {
+                resource: 'menu.visualization.multiDimensionDataAnalysis',
+                actions: ['write'],
+              },
+            ],
+            oneOfPerm: true,
+          },
+        ],
       },
-    ],
-  },
-  {
-    name: 'menu.user',
-    key: 'user',
-    children: [
       {
-        name: 'menu.user.info',
-        key: 'user/info',
+        name: 'menu.list',
+        key: 'list',
+        children: [
+          {
+            name: 'menu.list.searchMaterial',
+            key: 'list/search-material',
+          },
+          {
+            name: 'menu.list.searchUser',
+            key: 'list/search-user',
+          },
+        ],
       },
       {
-        name: 'menu.user.setting',
-        key: 'user/setting',
+        name: 'menu.user',
+        key: 'user',
+        children: [
+          {
+            name: 'menu.user.info',
+            key: 'user/info',
+          },
+          {
+            name: 'menu.user.setting',
+            key: 'user/setting',
+          },
+        ],
       },
     ],
   },
 ];
+
+function getAdminKeys(route, keys = []) {
+  if (route.children) {
+    route.children.forEach((child) => {
+      if(!child.children) {
+        keys.push(child.key);
+      }
+      getAdminKeys(child, keys);
+    });
+  }
+  return keys;
+}
+
+export const adminKeys = getAdminKeys(routes[1]);
 
 export const getName = (path: string, routes) => {
   return routes.find((item) => {
@@ -151,6 +186,7 @@ const useRoute = (userPermission): [IRoute[], string] => {
     const first = permissionRoute[0];
     if (first) {
       const firstRoute = first?.children?.[0]?.key || first.key;
+      console.info('firstRoute',firstRoute, permissionRoute)
       return firstRoute;
     }
     return '';

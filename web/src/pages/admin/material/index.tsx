@@ -10,8 +10,6 @@ export default function Material() {
   return (
     <div
     >
-
-      <div className={styles.navbar}><Navbar show={true} /></div>
       <div className={styles.materialContainer}>
         <PersonSide />
         <NewsSplace />

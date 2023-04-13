@@ -7,9 +7,6 @@ import UserSetting from '../setting';
 export default function userSettingPage() {
   return (
     <div>
-      <div className={styles.navbar}>
-        <Navbar show={true} />
-      </div>
       <div className={styles.userInfoContainer}>
         <UserSetting />
       </div>

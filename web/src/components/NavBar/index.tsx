@@ -28,7 +28,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { GlobalState } from '@/store';
 import { GlobalContext } from '@/context';
 import useLocale from '@/utils/useLocale';
-import Logo from '@/assets/devlink_d_0.svg';
+import Logo from '@/assets/devlink_d_black.svg';
 import MessageBox from '@/components/MessageBox';
 import IconButton from './IconButton';
 import styles from './style/index.module.less';
@@ -48,7 +48,7 @@ function Navbar({ show }: { show: boolean }) {
 
   function logout() {
     setUserStatus('logout');
-    window.location.href = '/login';
+    // window.location.href = '/login';
   }
 
   function onMenuItemClick(key) {

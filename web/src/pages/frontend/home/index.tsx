@@ -17,7 +17,6 @@ export default function Home() {
         'home-arco-lang': lang === 'en-US',
       })}
     >
-      <Navbar show={true} />
       <Banner />
       <SectionResource />
       <QuickStart />

@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from '@/components/NavBar';
 
 import styles from './styles/index.module.less';
-import CodeCopy from '@/pages/home/components/CodeCopy';
+import CodeCopy from '@/pages/frontend/home/components/CodeCopy';
 import { Avatar, Tabs, Tag } from '@arco-design/web-react';
 import {
   IconBranch,
@@ -36,9 +36,6 @@ export default function MaterialInfo() {
 
   return (
     <div className={styles.materialInfoBox}>
-      <div className={styles.navbar}>
-        <Navbar show={true} />
-      </div>
       <div className={styles.materialInfoContainer}>
         <div className={styles.materialHeader}>
           <div className={styles.materialInfo}>

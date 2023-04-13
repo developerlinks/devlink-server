@@ -19,7 +19,7 @@ import qs from 'query-string';
 import NProgress from 'nprogress';
 import Navbar from './components/NavBar';
 import Footer from './components/Footer';
-import useRoute, { IRoute } from '@/routes';
+import useRoute, { IRoute, adminKeys } from '@/routes';
 import { isArray } from './utils/is';
 import useLocale from './utils/useLocale';
 import getUrlParams from './utils/getUrlParams';
@@ -56,26 +56,34 @@ function getIconFromKey(key) {
   }
 }
 
-function getFlattenRoutes(routes) {
-  const mod = import.meta.glob('./pages/**/[a-z[]*.tsx');
+function getFlattenRoutes(routes: IRoute[]) {
   const res = [];
-  function travel(_routes) {
+  function travel(_routes, tips = 'admin') {
     _routes.forEach((route) => {
+      if (route.name === 'admin' || route.name === 'frontend') {
+        tips = route.name;
+      }
+      const mod =
+        tips === 'admin'
+          ? import.meta.glob('./pages/admin/**/[a-z[]*.tsx')
+          : import.meta.glob('./pages/frontend/**/[a-z[]*.tsx');
       const visibleChildren = (route.children || []).filter(
         (child) => !child.ignore
       );
       if (route.key && (!route.children || !visibleChildren.length)) {
         try {
-          route.component = lazyload(mod[`./pages/${route.key}/index.tsx`]);
+          route.component = lazyload(
+            mod[`./pages/${tips}/${route.key}/index.tsx`]
+          );
           res.push(route);
         } catch (e) {
-          console.log(route.key);
+          // console.log(route.key);
           console.error(e);
         }
       }
 
       if (isArray(route.children) && route.children.length) {
-        travel(route.children);
+        travel(route.children, tips);
       }
     });
   }
@@ -112,11 +120,11 @@ function PageLayout() {
   const navbarHeight = 60;
   const menuWidth = collapsed ? 48 : settings.menuWidth;
 
-  const showNavbar = settings.navbar && urlParams.navbar !== false;
-  const showMenu = settings.menu && urlParams.menu !== false;
   const showFooter = settings.footer && urlParams.footer !== false;
 
   const flattenRoutes = useMemo(() => getFlattenRoutes(routes) || [], [routes]);
+  const currentPathName = window.location.pathname.substring(1);
+  const showMenu = adminKeys.find((item) => item === currentPathName);
 
   function onClickMenuItem(key) {
     const currentRoute = flattenRoutes.find((r) => r.key === key);
@@ -134,14 +142,18 @@ function PageLayout() {
   }
 
   const paddingLeft = showMenu ? { paddingLeft: menuWidth } : {};
-  const paddingTop = showNavbar ? { paddingTop: navbarHeight } : {};
+  const paddingTop = { paddingTop: navbarHeight };
   const paddingStyle = { ...paddingLeft, ...paddingTop };
 
   function renderRoutes(locale) {
     routeMap.current.clear();
     return function travel(_routes: IRoute[], level, parentNode = []) {
       return _routes.map((route) => {
-        const { breadcrumb = true, ignore } = route;
+        const { breadcrumb, ignore, name } = route;
+        if (name === 'admin') {
+          // 去除 admin 的一级菜单
+          return travel(route.children, 1);
+        }
         const iconDom = getIconFromKey(route.key);
         const titleDom = (
           <>
@@ -155,7 +167,7 @@ function PageLayout() {
         );
 
         const visibleChildren = (route.children || []).filter((child) => {
-          const { ignore, breadcrumb = true } = child;
+          const { ignore, breadcrumb } = child;
           if (ignore || route.ignore) {
             routeMap.current.set(
               `/${child.key}`,
@@ -208,15 +220,19 @@ function PageLayout() {
     setBreadCrumb(routeConfig || []);
     updateMenuStatus();
   }, [pathname]);
+  {
+    console.info(
+      'renderRoutes(locale)(routes, 1)',
+      renderRoutes(locale)(routes, 1)
+    );
+  }
 
   return (
     <Layout className={styles.layout}>
       <div
-        className={cs(styles['layout-navbar'], {
-          [styles['layout-navbar-hidden']]: !showNavbar,
-        })}
+        className={cs(styles['layout-navbar'])}
       >
-        <Navbar show={showNavbar} />
+        <Navbar show={true} />
       </div>
       {userLoading ? (
         <Spin className={styles['spin']} />

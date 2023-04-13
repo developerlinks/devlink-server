@@ -52,15 +52,15 @@ function Index() {
     }
   }
 
-
+  // TODO: WHITELIST
   const whiteList = ['register', 'login','home'];
   const pathname = window.location.pathname.replace(/\//g, '');
   useEffect(() => {
-    if (checkLogin()) {
-      fetchUserInfo();
-    } else if (whiteList.findIndex((item) => item === pathname) === -1) {
-      window.location.pathname = '/login';
-    }
+    // if (checkLogin()) {
+    //   fetchUserInfo();
+    // } else if (whiteList.findIndex((item) => item === pathname) === -1) {
+    //   window.location.pathname = '/login';
+    // }
   }, []);
 
   useEffect(() => {
@@ -93,13 +93,13 @@ function Index() {
         <Provider store={store}>
           <GlobalContext.Provider value={contextValue}>
             <Switch>
-              <Route path="/login" component={Login} />
+              {/* <Route path="/login" component={Login} />
               <Route path="/register" component={Register} />
               <Route path='/home' component={Home} />
               <Route path='/material' component={Material} />
               <Route path='/materialinfo' component={MaterialInfo}/>
               <Route path='/userinfo' component={userInfoPage}/>
-              <Route path='/usersetting' component={userSettingPage}/>
+              <Route path='/usersetting' component={userSettingPage}/> */}
               <Route path="/" component={PageLayout} />
             </Switch>
           </GlobalContext.Provider>
