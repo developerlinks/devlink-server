@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'devlink',
+      name: 'devlink-server',
       script: './dist/src/main.js',
       cwd: '/home/ubuntu/app/devlink/devlink-server', // 使用绝对路径
       env: {
