@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'devlink',
       script: './dist/src/main.js',
-      cwd: '/home/ubuntu/app/devlink/server', // 使用绝对路径
+      cwd: '/home/ubuntu/app/devlink/devlink-server', // 使用绝对路径
       env: {
         NODE_ENV: process.env.NODE_ENV || 'production',
       },

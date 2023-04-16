@@ -37,7 +37,7 @@ export class MaterialController {
   }
 
   @Get()
-  @ApiOperation({ summary: '查询所有的标签' })
+  @ApiOperation({ summary: '查询所有的物料' })
   search(@Query() query: GetMaterialDto) {
     return this.materialService.findAll(query);
   }
