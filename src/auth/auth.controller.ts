@@ -34,13 +34,15 @@ export class AuthController {
   @Post('/signin_by_password')
   async signInByEmailAndPassword(@Body() dto: SignInByEmailAndPassowrdDto) {
     const { email, password } = dto;
-    const { token, refreshToken } = await this.authService.signInByEmailAndPassword(
+
+    const { user, token, refreshToken } = await this.authService.signInByEmailAndPassword(
       email,
       password,
     );
     // 设置token
     await this.redis.set(`${email}_token`, token, 'EX', 24 * 60 * 60);
     return {
+      user,
       access_token: token,
       refreshToken,
     };

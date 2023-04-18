@@ -47,6 +47,7 @@ export class AuthService {
 
     await this.userRepository.save(user);
     return {
+      user,
       token,
       refreshToken,
     };

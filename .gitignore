@@ -39,3 +39,5 @@ test.*
 .env.development
 .env.production
 .env
+
+redis.conf

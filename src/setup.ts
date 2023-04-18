@@ -37,6 +37,22 @@ export const setupApp = (app: INestApplication) => {
       max: 300, // limit each IP to 100 requests per windowMs
     }),
   );
+
+  app.enableCors({
+    origin: (origin, callback) => {
+      const allowedOrigins = ['https://devlink.wiki', 'https://devlink.wiki', config['DB_HOST']]; // 您可以在此列表中添加更多允许的域名
+      // 如果 origin 未定义（例如，通过 Postman 进行 API 调用），允许请求
+      if (!origin) return callback(null, true);
+
+      // 检查 origin 是否在允许的域名列表中
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = `CORS policy: ${origin} is not allowed.`;
+        return callback(new Error(msg), false);
+      }
+
+      return callback(null, true);
+    },
+  });
   const isProd = process.env.NODE_ENV === 'production';
   if (isProd) {
     const adminAccountService = app.get(UserService);

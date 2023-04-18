@@ -8,12 +8,7 @@ import { generateDocument } from './doc';
 async function bootstrap() {
   const config = getServerConfig();
 
-  const app = await NestFactory.create(AppModule, {
-    cors: {
-      origin: true,
-      credentials: true,
-    },
-  });
+  const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   generateDocument(app);
   setupApp(app);
