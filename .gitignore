@@ -4,6 +4,7 @@ packages/*/lib
 /dist
 /node_modules
 
+logs
 # Logs
 *.log
 npm-debug.log*
