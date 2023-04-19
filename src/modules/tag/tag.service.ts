@@ -28,7 +28,7 @@ export class TagService {
     const { limit, page, name, username } = query;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
-    const [data, total] = await this.tagRepository.findAndCount({
+    const [tags, total] = await this.tagRepository.findAndCount({
       select: {
         id: true,
         name: true,
@@ -48,6 +48,6 @@ export class TagService {
       skip,
     });
     const totalPages = Math.ceil(total / limit);
-    return { data, total, totalPages };
+    return { tags, total, totalPages };
   }
 }

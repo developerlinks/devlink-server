@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Req,
   UnauthorizedException,
   UseFilters,
@@ -19,6 +20,7 @@ import { JwtGuard } from 'src/guards/jwt.guard';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { CreateGroupPipe } from './pipe/create-group.pipe';
 import { CreateGroupDto } from './dto/create-group.dto';
+import { GetMyGroupDto } from './dto/get-group.dto';
 @ApiTags('分组')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(new TypeormFilter())
@@ -41,9 +43,9 @@ export class GroupController {
   @ApiOperation({ summary: '查询自己的分组' })
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  getGroup(@Req() req) {
+  getGroup(@Query() query: GetMyGroupDto, @Req() req) {
     const userId = req.user.userId;
 
-    return this.groupService.getGroup(userId);
+    return this.groupService.getGroup(userId, query);
   }
 }
