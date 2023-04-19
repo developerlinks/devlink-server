@@ -8,9 +8,9 @@ import { httpsOptions } from './https-options';
 
 async function bootstrap() {
   const config = getServerConfig();
-  const isPord = config['NODE_ENV'] === 'production';
+  const isProd = process.env.NODE_ENV === 'production';
   const app = await NestFactory.create(AppModule, {
-    httpsOptions: isPord ? httpsOptions : null,
+    httpsOptions: isProd ? httpsOptions : null,
   });
   app.setGlobalPrefix('api');
   generateDocument(app);
