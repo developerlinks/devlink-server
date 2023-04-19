@@ -1,9 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, ClassSerializerInterceptor, UseFilters } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { TypeormFilter } from 'src/filters/typeorm.filter';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('权限')
 @Controller('roles')
+@UseInterceptors(ClassSerializerInterceptor)
+@UseFilters(new TypeormFilter())
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 

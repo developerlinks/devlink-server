@@ -79,6 +79,21 @@ export class MaterialService {
     return { data, total, totalPages };
   }
 
+  async findMySelf(id: string) {
+    const [materials, total] = await this.materialsRepository.findAndCount({
+      where: {
+        user: {
+          id,
+        },
+      },
+      relations: ['user', 'tags', 'groups'],
+    });
+    return {
+      materials,
+      total,
+    }
+  }
+
   findByTags(query: GetMaterialByTagsDto) {
     const { tags } = query;
   }

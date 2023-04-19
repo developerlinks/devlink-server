@@ -10,6 +10,9 @@ import {
   Req,
   Query,
   UnauthorizedException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  UseFilters,
 } from '@nestjs/common';
 import { MaterialService } from './material.service';
 import { CreateMaterialDto } from './dto/create-material.dto';
@@ -19,8 +22,11 @@ import { CreateMaterialPipe } from './pipes/create-material.pipe';
 import { Material } from '../../entity/material.entity';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetMaterialByTagsDto, GetMaterialDto } from './dto/get-material.dto';
+import { TypeormFilter } from 'src/filters/typeorm.filter';
 
 @ApiTags('物料')
+@UseInterceptors(ClassSerializerInterceptor)
+@UseFilters(new TypeormFilter())
 @Controller('material')
 export class MaterialController {
   constructor(private readonly materialService: MaterialService) {}
@@ -40,6 +46,17 @@ export class MaterialController {
   @ApiOperation({ summary: '查询所有的物料' })
   search(@Query() query: GetMaterialDto) {
     return this.materialService.findAll(query);
+  }
+
+  @Get('myself')
+  @ApiOperation({ summary: '查询自己的物料' })
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  searchMySelf(@Req() req) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException();
+    }
+    return this.materialService.findMySelf(req.user.userId);
   }
 
   @Post('search/byTags')
