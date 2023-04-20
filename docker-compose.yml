@@ -14,13 +14,6 @@ services:
     ports:
       - 127.0.0.1:3306:3306
 
-  # navicat
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
-
   redis:
     image: redis
     restart: always
