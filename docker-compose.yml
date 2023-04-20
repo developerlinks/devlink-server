@@ -12,7 +12,7 @@ services:
       MYSQL_DATABASE: devlink-db
       MYSQL_ROOT_PASSWORD: bowling
     ports:
-      - 3306:3306
+      - 127.0.0.1:3306:3306
 
   # navicat
   adminer:
@@ -25,7 +25,7 @@ services:
     image: redis
     restart: always
     ports:
-      - 6379:6379
+      - 127.0.0.1:6379:6379
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
