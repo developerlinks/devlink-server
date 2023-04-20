@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Group } from '../../entity/group.entity';
@@ -26,9 +26,15 @@ export class MaterialService {
 
     const groups = groupIds
       ? await Promise.all(
-          groupIds.map(groupId => this.groupRepository.findOne({ where: { id: groupId } })),
+          groupIds.map(groupId =>
+            this.groupRepository.findOne({
+              where: { id: groupId },
+            }),
+          ),
         )
       : [];
+
+    console.info('groups', groups, 'tags', tags);
 
     const user = await this.userRepository.findOne({
       where: {
@@ -55,6 +61,11 @@ export class MaterialService {
         id: true,
         name: true,
         npmName: true,
+        version: true,
+        isPrivate: true,
+        description: true,
+        installCommand: true,
+        startCommand: true,
       },
       relations: {
         tags: true,
@@ -91,7 +102,7 @@ export class MaterialService {
     return {
       materials,
       total,
-    }
+    };
   }
 
   findByTags(query: GetMaterialByTagsDto) {
@@ -110,13 +121,25 @@ export class MaterialService {
   // async update(id: string, updateMaterialDto: UpdateMaterialDto) {
   //   const { tagIds, groupIds, ...rest } = updateMaterialDto;
 
-  async remove(id: string) {
-    const material = await this.findOne(id);
+  async remove(id: string, userId: string) {
+    const material = await this.materialsRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        user: true,
+      },
+    });
+
+    if (userId !== material.user.id) {
+      throw new UnauthorizedException();
+    }
+
     return this.materialsRepository.remove(material);
   }
 
   // 更新物料
-  async update(id: string, updateMaterialDto: UpdateMaterialDto) {
+  async update(id: string, userId: string, updateMaterialDto: UpdateMaterialDto) {
     const { tagIds, groupIds, ...rest } = updateMaterialDto;
 
     const tags = tagIds
@@ -133,7 +156,13 @@ export class MaterialService {
       where: {
         id,
       },
+      relations: {
+        user: true,
+      },
     });
+    if (userId !== material.user.id) {
+      throw new UnauthorizedException();
+    }
 
     const newMaterial = this.materialsRepository.create({
       ...material,

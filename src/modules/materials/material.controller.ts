@@ -74,6 +74,19 @@ export class MaterialController {
     if (!req.user.userId) {
       throw new UnauthorizedException();
     }
-    return this.materialService.update(id, updateMaterialDto);
+    return this.materialService.update(id,req.user.userId, updateMaterialDto);
   }
+
+  // 删除物料
+  @Delete(':id')
+  @ApiOperation({ summary: '删除物料' })
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  remove(@Param('id') id: string, @Req() req) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException();
+    }
+    return this.materialService.remove(id, req.user.userId);
+  }
+
 }

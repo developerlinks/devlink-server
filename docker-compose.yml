@@ -13,6 +13,8 @@ services:
       MYSQL_ROOT_PASSWORD: bowling
     ports:
       - 127.0.0.1:3306:3306
+    volumes:
+    - ./mysql-data:/var/lib/mysql
 
   redis:
     image: redis

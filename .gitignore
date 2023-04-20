@@ -42,3 +42,5 @@ test.*
 .env
 
 redis.conf
+
+mysql-data

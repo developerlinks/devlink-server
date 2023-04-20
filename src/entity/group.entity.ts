@@ -8,6 +8,7 @@ import {
   JoinTable,
   PrimaryColumn,
   CreateDateColumn,
+  ManyToMany,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Material } from './material.entity';
@@ -18,12 +19,15 @@ export class Group {
   @PrimaryColumn('uuid')
   id: string;
 
+  @Expose()
   @Column()
   name: string;
 
+  @Expose()
   @Column()
   description: string;
 
+  @Expose()
   @CreateDateColumn()
   createdAt: Date;
 
@@ -32,9 +36,7 @@ export class Group {
   })
   user: User;
 
-  @OneToMany(() => Material, material => material.groups, {
-    onDelete: 'SET NULL',
-  })
+  @ManyToMany(() => Material, material => material.groups)
   material: Material[];
 
   constructor(partial?: Partial<Group>) {

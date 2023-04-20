@@ -11,6 +11,7 @@ export class TypeormFilter implements ExceptionFilter {
     }
     // 响应 请求对象
     const response = ctx.getResponse();
+    // FIXME: 没有被统一拦截到
     response.status(500).json({
       code: code,
       timestamp: new Date().toISOString(),

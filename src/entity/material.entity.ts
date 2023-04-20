@@ -36,6 +36,10 @@ export class Material {
 
   @Expose()
   @Column()
+  description: string = ''; // TODO:
+
+  @Expose()
+  @Column()
   version: string;
 
   @Expose()
@@ -62,6 +66,7 @@ export class Material {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Expose()
   @ManyToOne(() => User, user => user.materials, { cascade: true, onDelete: 'SET NULL' })
   user: User;
 
@@ -70,17 +75,21 @@ export class Material {
   @JoinTable({ name: 'material_tag' })
   tags: Tag[];
 
-  @ManyToOne(() => Group, group => group.material, { cascade: true })
+  @Expose()
+  @ManyToMany(() => Group, group => group.material)
   @JoinTable({ name: 'material_group' })
   groups: Group[];
 
+  @Expose()
   @OneToMany(() => Comment, comment => comment.materials)
   comments: Comment[];
 
+  @Expose()
   @OneToMany(() => Like, like => like.materials)
   likes: Like[];
 
   // 用户收藏的物料
+  @Expose()
   @ManyToMany(() => User, user => user.stars)
   stars: User[];
 }

@@ -67,24 +67,26 @@ export class UserController {
 
   @ApiOperation({ summary: '查询所有用户' })
   @Get('findall')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   getUsers(@Query() query: getUserDto) {
+    // 判断角色权限，只有管理员才能查询所有用户
     return this.userService.findAll(query);
   }
 
   @ApiOperation({ summary: '更新自己的信息' })
-  @Patch('/:id')
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
+  @Patch('update')
   async updateUser(
     @Body() updateUserDto: UpdateUserDto,
-    @Param('id') id: string,
     @Req() req,
   ): Promise<User> {
-    if (id !== req.user.userId) {
+    if (!req.user.userId) {
       throw new UnauthorizedException();
     }
 
-    return this.userService.update(id, updateUserDto);
+    return this.userService.update(req.user.userId, updateUserDto);
   }
 
   @ApiOperation({ summary: '更改/找回 密码' })

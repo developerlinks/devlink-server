@@ -8,6 +8,7 @@ import {
   ClassSerializerInterceptor,
   Get,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 
@@ -15,9 +16,10 @@ import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AuthService } from './auth.service';
 import { SignInByEmailAndPassowrdDto, SignInByEmailAndCodeDto } from './dto/signin-user.dto';
 import { EmailService } from '../tools/mail/mail.service';
-import { ApiOperation, ApiOkResponse, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiOkResponse, ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { SignupUserDto } from './dto/signup-user.dto';
 import { SendCodeDto } from 'src/tools/mail/dto/send-code.dto';
+import { JwtGuard } from 'src/guards/jwt.guard';
 
 @ApiTags('用户验证')
 @Controller('auth')
@@ -32,7 +34,9 @@ export class AuthController {
 
   @ApiOperation({ summary: '邮箱&密码 登录' })
   @Post('/signin_by_password')
-  async signInByEmailAndPassword(@Body() dto: SignInByEmailAndPassowrdDto) {
+  async signInByEmailAndPassword(@Body() dto: SignInByEmailAndPassowrdDto, @Req() req) {
+
+
     const { email, password } = dto;
 
     const { user, token, refreshToken } = await this.authService.signInByEmailAndPassword(
@@ -71,6 +75,8 @@ export class AuthController {
 
   // 退出登录
   @ApiOperation({ summary: '退出登录' })
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @Get('/logout')
   async logout(@Req() req) {
     const { email } = req.user;
