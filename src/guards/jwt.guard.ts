@@ -1,7 +1,7 @@
 import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ExtractJwt } from 'passport-jwt';
-import { verify } from 'jsonwebtoken';
+import { verify, TokenExpiredError } from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
@@ -20,7 +20,15 @@ export class JwtGuard extends AuthGuard('jwt') {
     if (!token) {
       throw new UnauthorizedException();
     }
-    const payload = await verify(token, this.configService.get(ConfigEnum.SECRET));
+    let payload;
+    try {
+      payload = await verify(token, this.configService.get(ConfigEnum.SECRET));
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        throw new UnauthorizedException('身份信息已过期');
+      }
+      throw error;
+    }
     const { email } = payload as JwtPayload;
     const tokenCache = email ? await this.redis.get(`${email}_token`) : null;
     if (!payload || !email || tokenCache !== token) {
