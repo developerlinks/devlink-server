@@ -15,7 +15,7 @@ export class AllExceptionFilter implements ExceptionFilter {
     private readonly logger: LoggerService,
     private readonly httpAdapterHost: HttpAdapterHost,
   ) {}
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: HttpException, host: ArgumentsHost) {
     const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
     const request = ctx.getRequest();
@@ -23,16 +23,16 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     const httpStatus =
       exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
-
-    const msg: unknown = exception['response'] || 'Internal Server Error';
+    this.logger.error(exception.message, exception.stack);
+    const msg: unknown = exception['response'] || '网络错误';
     const responseBody = {
+      timestamp: new Date().toISOString(),
       // headers: request.headers,
       // query: request.query,
-      status: httpStatus,
+      // ip: requestIp.getClientIp(request),
       body: request.body,
       params: request.params,
-      timestamp: new Date().toISOString(),
-      // ip: requestIp.getClientIp(request),
+      status: httpStatus,
       exceptioin: exception['name'],
       message: msg,
     };

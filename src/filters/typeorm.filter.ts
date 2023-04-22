@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, LoggerService } from '@nestjs/common';
 import { TypeORMError, QueryFailedError } from 'typeorm';
 
 @Catch(TypeORMError)
@@ -11,13 +11,16 @@ export class TypeormFilter implements ExceptionFilter {
     }
     // 响应 请求对象
     const response = ctx.getResponse();
-    // FIXME: 没有被统一拦截到
+    const request = ctx.getRequest();
+    const msg: unknown = exception['response'] || '网络错误';
+
     response.status(500).json({
-      code: code,
       timestamp: new Date().toISOString(),
-      // path: request.url,
-      // method: request.method,
-      message: exception.message,
+      message: msg,
+      exceptioin: exception['name'],
+      body: request.body,
+      status: code,
+      params: request.params,
     });
   }
 }

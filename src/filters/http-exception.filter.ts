@@ -8,16 +8,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     // 响应 请求对象
     const response = ctx.getResponse();
-    // const request = Pctx.getRequest();
+    const request = ctx.getRequest();
     // http状态码
     const status = exception.getStatus();
     this.logger.error(exception.message, exception.stack);
+    const msg: unknown = exception['response'] || '网络错误';
+
     response.status(status).json({
-      code: status,
       timestamp: new Date().toISOString(),
-      // path: request.url,
-      // method: request.method,
-      message: exception.message || exception.name,
+      status,
+      message: msg,
+      exceptioin: exception['name'],
+      body: request.body,
+      params: request.params,
     });
     // throw new Error('Method not implemented.');
   }
