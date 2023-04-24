@@ -17,7 +17,7 @@ import { User } from './user.entity';
 @Entity()
 export class Group {
   @PrimaryColumn('uuid')
-  id: string;
+  id: string = uuidv4();
 
   @Expose()
   @Column()
@@ -40,7 +40,6 @@ export class Group {
   material: Material[];
 
   constructor(partial?: Partial<Group>) {
-    this.id = uuidv4();
     this.name = '';
     this.description = '';
     Object.assign(this, partial);

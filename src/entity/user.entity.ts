@@ -20,6 +20,8 @@ import { Like } from './like.entity';
 import { Follow } from './follow.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from './tag.entity';
+import { Comment } from './comment.entity';
+import { CollectionGroup } from './collectionGroup.entity';
 
 @Entity()
 export class User {
@@ -60,11 +62,6 @@ export class User {
   @OneToMany(() => Like, like => like.user, { cascade: true })
   likes: Like[];
 
-  // 用户收藏的物料
-  @ManyToMany(() => Material, material => material.stars)
-  @JoinTable({ name: 'users_stars' })
-  stars: Material[];
-
   @OneToMany(() => Follow, follow => follow.follower, { cascade: true })
   followers: Follow[];
 
@@ -73,4 +70,10 @@ export class User {
 
   @OneToMany(() => Tag, tag => tag.user, { cascade: true })
   tags: Tag[];
+
+  @OneToMany(() => Comment, comment => comment.user, { cascade: true })
+  comments: Comment[];
+
+  @OneToMany(() => CollectionGroup, collectionGroup => collectionGroup.user, { cascade: true, onDelete: 'CASCADE' })
+  collectedInGroups: CollectionGroup[];
 }

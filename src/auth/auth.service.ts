@@ -150,8 +150,6 @@ export class AuthService {
     const code = await this.redis.get(`${email}_code`);
     if (!code) {
       throw new ForbiddenException('验证码已过期');
-    } else {
-      this.redis.del(`${email}_code`);
     }
 
     const res = await this.userService.create({
@@ -159,7 +157,7 @@ export class AuthService {
       email,
       password,
     });
-
+    this.redis.del(`${email}_code`);
     return res;
   }
 }

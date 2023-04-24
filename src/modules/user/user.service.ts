@@ -13,6 +13,7 @@ import { getServerConfig } from 'ormconfig';
 import { Gender, Profile } from '../../entity/profile.entity';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
+import { CollectionGroup } from 'src/entity/collectionGroup.entity';
 
 @Injectable()
 export class UserService {
@@ -24,22 +25,38 @@ export class UserService {
   ) {}
 
   async create(user: Partial<User>) {
-    if (!user.roles) {
-      const role = await this.rolesRepository.findOne({ where: { id: RolesEnum.user } });
-      user.roles = [role];
+    const role = await this.rolesRepository.findOne({ where: { id: RolesEnum.user } });
+    user.roles = [role];
+
+    // 重名检测
+    const userByUsername = await this.userRepository.findOne({
+      where: {
+        username: user.username,
+      },
+    });
+
+    if (userByUsername) {
+      throw new ForbiddenException('用户名已存在');
     }
-    if (user.roles instanceof Array && typeof user.roles[0] === 'number') {
-      user.roles = await this.rolesRepository.find({
-        where: {
-          id: In(user.roles),
-        },
-      });
+
+    // 邮箱重复检测
+    const userByEmail = await this.userRepository.findOne({
+      where: {
+        email: user.email,
+      },
+    });
+
+    if (userByEmail) {
+      throw new ForbiddenException('邮箱已存在，可找回密码');
     }
+
     const userTmp = await this.userRepository.create(user);
     userTmp.password = await argon2.hash(userTmp.password);
     const group = new Group({ name: '默认分组', description: '默认分组' });
+    const collectionGroup = new CollectionGroup({ name: '默认收藏夹', description: '默认收藏夹' });
     const profile = new Profile({ gender: Gender.OTHER });
     userTmp.group = [group];
+    userTmp.collectedInGroups = [collectionGroup];
     userTmp.profile = profile;
     const res = await this.userRepository.save(userTmp);
     return res;
@@ -51,7 +68,6 @@ export class UserService {
     const skip = ((page || 1) - 1) * take;
 
     const [data, total] = await this.userRepository.findAndCount({
-      // TODO: select?
       select: {
         id: true,
         username: true,
@@ -149,7 +165,6 @@ export class UserService {
         likes: true,
         followers: true,
         following: true,
-        stars: true,
       },
     });
   }

@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Material } from './material.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Comment {
@@ -29,4 +30,7 @@ export class Comment {
 
   @OneToMany(() => Comment, comment => comment.parent)
   children: Comment[];
+
+  @ManyToOne(() => User, user => user.comments)
+  user: User;
 }
