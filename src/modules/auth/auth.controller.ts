@@ -15,10 +15,10 @@ import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AuthService } from './auth.service';
 import { SignInByEmailAndPassowrdDto, SignInByEmailAndCodeDto } from './dto/signin-user.dto';
-import { EmailService } from '../tools/mail/mail.service';
+import { EmailService } from '../mail/mail.service';
 import { ApiOperation, ApiOkResponse, ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { SignupUserDto } from './dto/signup-user.dto';
-import { SendCodeDto } from 'src/tools/mail/dto/send-code.dto';
+import { SendCodeDto } from 'src/modules/mail/dto/send-code.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
 
 @ApiTags('用户验证')

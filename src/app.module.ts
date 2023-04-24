@@ -6,15 +6,15 @@ import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { connectionParams } from '../ormconfig';
-import { LogsModule } from './modules/logsM/logs.module';
+import { LogsModule } from './modules/logs-m/logs.module';
 import { RolesModule } from './modules/roles/roles.module';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { MaterialModule } from './modules/materials/material.module';
 import { ConfigEnum } from './enum/config.enum';
-import { PolisherModule } from './tools/textPolisher/text-polisher.module';
 import { GroupModule } from './modules/group/group.module';
 import { TagModule } from './modules/tag/tag.module';
-import { CollectionGroupModule } from './modules/collectionGroup/collectionGroup.module';
+import { CollectionGroupModule } from './modules/collection-group/collection-group.module';
+import { TextPolisherModule } from './modules/ai/text-polisher/text-polisher.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 const schema = Joi.object({
@@ -81,7 +81,7 @@ const schema = Joi.object({
     AuthModule,
     GroupModule,
     MaterialModule,
-    PolisherModule,
+    TextPolisherModule,
     TagModule,
     CollectionGroupModule,
   ],

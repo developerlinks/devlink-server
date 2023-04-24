@@ -15,14 +15,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CollectionGroupService } from './collectionGroup.service';
+import { CollectionGroupService } from './collection-group.service';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
-import { CreateColletcionGroupDto } from './dto/createCollectionGroup.dto';
-import { GetMaterialInGroupDto, GetMyCollectionGroupDto } from './dto/getCollectionGroup.dto';
-import { CreateCollectionGroupPipe } from './pipe/createCollectionGroup.pipe';
-import { AddMaterialIncollectionGroup } from './dto/addMaterialIncollectionGroup.dto';
+import { CreateColletcionGroupDto } from './dto/create-collection-group.dto';
+import { GetMaterialInGroupDto, GetMyCollectionGroupDto } from './dto/get-collection-group.dto';
+import { CreateCollectionGroupPipe } from './pipe/create-collection-group.pipe';
+import { AddMaterialIncollectionGroup } from './dto/add-material-in-collection-group.dto';
 @ApiTags('收藏分组')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(new TypeormFilter())

@@ -5,7 +5,7 @@ import { verify, TokenExpiredError } from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
-import { JwtPayload } from 'src/auth/auth.service';
+import { JwtPayload } from 'src/modules/auth/auth.service';
 
 @Injectable()
 export class JwtGuard extends AuthGuard('jwt') {

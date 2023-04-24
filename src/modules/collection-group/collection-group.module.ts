@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CollectionGroupController } from './collectionGroup.controller';
-import { CollectionGroupService } from './collectionGroup.service';
+import { CollectionGroupController } from './collection-group.controller';
+import { CollectionGroupService } from './collection-group.service';
 import { User } from 'src/entity/user.entity';
 import { CollectionGroup } from 'src/entity/collectionGroup.entity';
 import { Material } from 'src/entity/material.entity';

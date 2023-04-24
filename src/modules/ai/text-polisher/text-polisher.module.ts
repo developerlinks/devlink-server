@@ -6,4 +6,4 @@ import { TextPolisherController } from './text-polisher.controller';
   providers: [TextPolisherService],
   controllers: [TextPolisherController],
 })
-export class PolisherModule {}
+export class TextPolisherModule {}

@@ -8,7 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/entity/user.entity';
-import { GetMaterialInGroupDto, GetMyCollectionGroupDto } from './dto/getCollectionGroup.dto';
+import { GetMaterialInGroupDto, GetMyCollectionGroupDto } from './dto/get-collection-group.dto';
 import { CollectionGroup } from 'src/entity/collectionGroup.entity';
 import { Material } from 'src/entity/material.entity';
 import { TypeormFilter } from 'src/filters/typeorm.filter';

@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Profile } from 'src/entity/profile.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../src/entity/user.entity';
+import { User } from '../../entity/user.entity';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { SignupUserDto } from './dto/signup-user.dto';
 
