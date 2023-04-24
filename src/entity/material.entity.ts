@@ -19,6 +19,7 @@ import { Comment } from './comment.entity';
 import { Group } from './group.entity';
 import { Like } from './like.entity';
 import { Tag } from './tag.entity';
+import { CollectionGroup } from './collectionGroup.entity';
 
 @Entity()
 export class Material {
@@ -88,8 +89,7 @@ export class Material {
   @OneToMany(() => Like, like => like.materials)
   likes: Like[];
 
-  // 用户收藏的物料
   @Expose()
-  @ManyToMany(() => User, user => user.stars)
-  stars: User[];
+  @ManyToMany(() => CollectionGroup, collectionGroup => collectionGroup.collectedMaterials)
+  collectedInGroups: CollectionGroup[];
 }

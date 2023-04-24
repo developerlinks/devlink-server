@@ -14,6 +14,7 @@ import { ConfigEnum } from './enum/config.enum';
 import { PolisherModule } from './tools/textPolisher/text-polisher.module';
 import { GroupModule } from './modules/group/group.module';
 import { TagModule } from './modules/tag/tag.module';
+import { CollectionGroupModule } from './modules/collectionGroup/collectionGroup.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 const schema = Joi.object({
@@ -82,6 +83,7 @@ const schema = Joi.object({
     MaterialModule,
     PolisherModule,
     TagModule,
+    CollectionGroupModule,
   ],
   controllers: [],
   providers: [Logger],
