@@ -28,6 +28,7 @@ import { JwtGuard } from 'src/guards/jwt.guard';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { TokenExpiredMessage } from 'src/constant';
 
 @ApiTags('用户')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -83,7 +84,7 @@ export class UserController {
     @Req() req,
   ): Promise<User> {
     if (!req.user.userId) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
 
     return this.userService.update(req.user.userId, updateUserDto);
@@ -100,6 +101,9 @@ export class UserController {
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
   removeUser(@Param('id') id: string, @Req() req) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException(TokenExpiredMessage);
+    }
     //TODO: 判断是否是管理员
     return this.userService.remove(id);
   }

@@ -18,6 +18,7 @@ import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { GetTagDto } from './dto/get-tag.dto';
+import { TokenExpiredMessage } from 'src/constant';
 
 @ApiTags('标签')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -32,7 +33,7 @@ export class TagController {
   @ApiBearerAuth()
   addGroup(@Body() dto: CreateTagDto, @Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     return this.tagService.create(req.user.userId, dto);
   }

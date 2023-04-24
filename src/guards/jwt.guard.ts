@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { JwtPayload } from 'src/modules/auth/auth.service';
+import { TokenExpiredMessage } from 'src/constant';
 
 @Injectable()
 export class JwtGuard extends AuthGuard('jwt') {
@@ -18,21 +19,21 @@ export class JwtGuard extends AuthGuard('jwt') {
     const request = context.switchToHttp().getRequest();
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     let payload;
     try {
       payload = await verify(token, this.configService.get(ConfigEnum.SECRET));
     } catch (error) {
       if (error instanceof TokenExpiredError) {
-        throw new UnauthorizedException('身份信息已过期');
+        throw new UnauthorizedException(TokenExpiredMessage);
       }
       throw error;
     }
     const { email } = payload as JwtPayload;
     const tokenCache = email ? await this.redis.get(`${email}_token`) : null;
     if (!payload || !email || tokenCache !== token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
 
     const parentCanActivate = (await super.canActivate(context)) as boolean;

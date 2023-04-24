@@ -23,6 +23,7 @@ import { Material } from '../../entity/material.entity';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetMaterialByTagsDto, GetMaterialDto } from './dto/get-material.dto';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
+import { TokenExpiredMessage } from 'src/constant';
 
 @ApiTags('物料')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -37,7 +38,7 @@ export class MaterialController {
   @ApiBearerAuth()
   create(@Body(CreateMaterialPipe) dto: CreateMaterialDto, @Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     return this.materialService.create(req.user.userId, dto);
   }
@@ -54,7 +55,7 @@ export class MaterialController {
   @ApiBearerAuth()
   searchMySelf(@Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     return this.materialService.findMySelf(req.user.userId);
   }
@@ -72,7 +73,7 @@ export class MaterialController {
   @ApiBearerAuth()
   update(@Param('id') id: string, @Body() updateMaterialDto: UpdateMaterialDto, @Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     return this.materialService.update(id,req.user.userId, updateMaterialDto);
   }
@@ -84,7 +85,7 @@ export class MaterialController {
   @ApiBearerAuth()
   remove(@Param('id') id: string, @Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     return this.materialService.remove(id, req.user.userId);
   }

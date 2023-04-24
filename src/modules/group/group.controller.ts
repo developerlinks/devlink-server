@@ -21,6 +21,7 @@ import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { CreateGroupPipe } from './pipe/create-group.pipe';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { GetMyGroupDto } from './dto/get-group.dto';
+import { TokenExpiredMessage } from 'src/constant';
 @ApiTags('分组')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(new TypeormFilter())
@@ -34,7 +35,7 @@ export class GroupController {
   @ApiBearerAuth()
   addGroup(@Body(CreateGroupPipe) dto: CreateGroupDto, @Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     return this.groupService.addGroup(req.user.userId, dto);
   }
@@ -44,6 +45,9 @@ export class GroupController {
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
   getGroup(@Query() query: GetMyGroupDto, @Req() req) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException(TokenExpiredMessage);
+    }
     const userId = req.user.userId;
 
     return this.groupService.getGroup(userId, query);

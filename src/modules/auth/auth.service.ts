@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../entity/user.entity';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { SignupUserDto } from './dto/signup-user.dto';
+import { TokenExpiredMessage } from 'src/constant';
 
 export interface JwtPayload {
   userId: number;
@@ -113,12 +114,12 @@ export class AuthService {
       });
 
       if (!profile || profile.refreshTokenExpiresAt < Number(new Date())) {
-        throw new UnauthorizedException('Invalid or expired refresh token.');
+        throw new UnauthorizedException(TokenExpiredMessage);
       }
 
       return this.generateTokens(profile.user);
     } catch (error) {
-      throw new UnauthorizedException('Invalid or expired refresh token.');
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
   }
 

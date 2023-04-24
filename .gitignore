@@ -1,7 +1,7 @@
 packages/*/lib
 
 # compiled output
-/dist
+dist
 /node_modules
 
 logs

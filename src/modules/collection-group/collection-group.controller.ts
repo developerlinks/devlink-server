@@ -23,6 +23,7 @@ import { CreateColletcionGroupDto } from './dto/create-collection-group.dto';
 import { GetMaterialInGroupDto, GetMyCollectionGroupDto } from './dto/get-collection-group.dto';
 import { CreateCollectionGroupPipe } from './pipe/create-collection-group.pipe';
 import { AddMaterialIncollectionGroup } from './dto/add-material-in-collection-group.dto';
+import { TokenExpiredMessage } from 'src/constant';
 @ApiTags('收藏分组')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(new TypeormFilter())
@@ -36,7 +37,7 @@ export class CollectionGroupController {
   @ApiBearerAuth()
   addGroup(@Body(CreateCollectionGroupPipe) dto: CreateColletcionGroupDto, @Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException('登录过期');
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     return this.collectionGroupService.addGroup(req.user.userId, dto);
   }
@@ -47,7 +48,7 @@ export class CollectionGroupController {
   @ApiBearerAuth()
   getGroup(@Query() query: GetMyCollectionGroupDto, @Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException('登录过期');
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     const userId = req.user.userId;
 
@@ -61,7 +62,7 @@ export class CollectionGroupController {
   @ApiBearerAuth()
   addMaterialToGroup(@Param('id') id: string, @Body() body: AddMaterialIncollectionGroup, @Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException('登录过期');
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     const userId = req.user.userId;
     return this.collectionGroupService.addMaterialToGroup(id, userId, body.materialId);
@@ -73,7 +74,7 @@ export class CollectionGroupController {
   @ApiBearerAuth()
   getMaterial(@Param('id') id: string, @Query() query: GetMaterialInGroupDto, @Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException('登录过期');
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     const userId = req.user.userId;
     return this.collectionGroupService.getMaterialInGroup(id, userId, query);
@@ -85,7 +86,7 @@ export class CollectionGroupController {
   @ApiBearerAuth()
   deleteGroup(@Param('id') id: string, @Req() req) {
     if (!req.user.userId) {
-      throw new UnauthorizedException('登录过期');
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
     const userId = req.user.userId;
     return this.collectionGroupService.deleteGroup(id, userId);

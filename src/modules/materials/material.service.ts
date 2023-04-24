@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Group } from '../../entity/group.entity';
@@ -8,6 +8,7 @@ import { UpdateMaterialDto } from './dto/update-material.dto';
 import { Material } from '../../entity/material.entity';
 import { GetMaterialByTagsDto, GetMaterialDto } from './dto/get-material.dto';
 import { User } from 'src/entity/user.entity';
+import { TokenExpiredMessage } from 'src/constant';
 
 @Injectable()
 export class MaterialService {
@@ -70,7 +71,6 @@ export class MaterialService {
       relations: {
         tags: true,
         user: true,
-        groups: true,
       },
       where: {
         name,
@@ -132,7 +132,7 @@ export class MaterialService {
     });
 
     if (userId !== material.user.id) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException('权限不足');
     }
 
     return this.materialsRepository.remove(material);
@@ -161,7 +161,7 @@ export class MaterialService {
       },
     });
     if (userId !== material.user.id) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(TokenExpiredMessage);
     }
 
     const newMaterial = this.materialsRepository.create({
