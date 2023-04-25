@@ -13,6 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entity/user.entity';
 import { Profile } from 'src/entity/profile.entity';
 import { UserService } from 'src/modules/user/user.service';
+import { Device } from 'src/entity/device.entity';
 
 @Global()
 @Module({
@@ -31,7 +32,7 @@ import { UserService } from 'src/modules/user/user.service';
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Profile]),
+    TypeOrmModule.forFeature([User, Profile, Device]),
   ],
   providers: [AuthService, JwtStrategy, EmailService],
   controllers: [AuthController],

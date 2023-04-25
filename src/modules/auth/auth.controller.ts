@@ -9,17 +9,21 @@ import {
   Get,
   Req,
   UseGuards,
+  Delete,
+  UnauthorizedException,
+  Param,
 } from '@nestjs/common';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 
 import { TypeormFilter } from 'src/filters/typeorm.filter';
-import { AuthService } from './auth.service';
+import { AuthService, JwtPayload } from './auth.service';
 import { SignInByEmailAndPassowrdDto, SignInByEmailAndCodeDto } from './dto/signin-user.dto';
 import { EmailService } from '../mail/mail.service';
-import { ApiOperation, ApiOkResponse, ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiOperation, ApiOkResponse, ApiBody, ApiTags, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { SignupUserDto } from './dto/signup-user.dto';
 import { SendCodeDto } from 'src/modules/mail/dto/send-code.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
+import { TokenExpiredMessage } from 'src/constant';
 
 @ApiTags('用户验证')
 @Controller('auth')
@@ -34,20 +38,14 @@ export class AuthController {
 
   @ApiOperation({ summary: '邮箱&密码 登录' })
   @Post('/signin_by_password')
-  async signInByEmailAndPassword(@Body() dto: SignInByEmailAndPassowrdDto, @Req() req) {
-
-
-    const { email, password } = dto;
-
-    const { user, token, refreshToken } = await this.authService.signInByEmailAndPassword(
-      email,
-      password,
+  async signInByEmailAndPassword(@Body() dto: SignInByEmailAndPassowrdDto) {
+    const { user, accessToken, refreshToken } = await this.authService.signInByEmailAndPassword(
+      dto,
     );
     // 设置token
-    await this.redis.set(`${email}_token`, token, 'EX', 24 * 60 * 60);
     return {
       user,
-      access_token: token,
+      accessToken,
       refreshToken,
     };
   }
@@ -55,22 +53,17 @@ export class AuthController {
   @ApiOperation({ summary: '邮箱&验证码 登录' })
   @Post('/signin_by_code')
   async signInByEmailAndcode(@Body() dto: SignInByEmailAndCodeDto) {
-    const { email, code } = dto;
-    const { token, refreshToken } = await this.authService.signInByEmailAndCode(email, code);
-    // 设置token
-    await this.redis.set(`${email}_token`, token, 'EX', 24 * 60 * 60);
+    const { accessToken, refreshToken } = await this.authService.signInByEmailAndCode(dto);
     return {
-      access_token: token,
+      accessToken,
       refreshToken,
     };
   }
 
-  @ApiOperation({ summary: '刷新 Token' })
-  @Post('refresh-token')
-  async refreshToken(
-    @Body('refreshToken') refreshToken: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
-    return this.authService.refreshAccessToken(refreshToken);
+  @ApiOperation({ summary: '根据 refreshToken 生成新的 accessToken' })
+  @Post('/refresh_token')
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    return await this.authService.generateAccessTokenFromRefreshToken(refreshToken);
   }
 
   // 退出登录
@@ -79,12 +72,15 @@ export class AuthController {
   @ApiBearerAuth()
   @Get('/logout')
   async logout(@Req() req) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException(TokenExpiredMessage);
+    }
     const { email } = req.user;
     return await this.redis.del(`${email}_token`);
   }
 
   @ApiOperation({ summary: '注册' })
-  @Post('/signup')
+  @Post('signup')
   signup(@Body() dto: SignupUserDto) {
     return this.authService.signup(dto);
   }
@@ -95,5 +91,31 @@ export class AuthController {
   @Post('send-code')
   async sendVerificationCode(@Body('email') email: string): Promise<void> {
     await this.emailService.sendVerificationCode(email);
+  }
+
+  @ApiOperation({ summary: '获取当前登录设备' })
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @Get('get_user_devices')
+  async getUserDevices(@Req() req) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException(TokenExpiredMessage);
+    }
+    const { userId } = req.user as JwtPayload;
+    return await this.authService.findUserDevices(userId);
+  }
+
+  @ApiOperation({ summary: '强制退出某设备' })
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @ApiParam({ name: 'deviceId', description: '需要强制退出的设备 ID' })
+  @Delete('delete_user_device/:deviceId')
+  async forceLogoutDevice(@Req() req, @Param('deviceId') deviceId: string) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException(TokenExpiredMessage);
+    }
+    const { userId } = req.user as JwtPayload;
+
+    return await this.authService.forceLogoutDevice(userId, deviceId);
   }
 }

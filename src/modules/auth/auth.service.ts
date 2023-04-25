@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from 'src/modules/user/user.service';
 // import { getUserDto } from '../user/dto/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -11,12 +16,18 @@ import { User } from '../../entity/user.entity';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { SignupUserDto } from './dto/signup-user.dto';
 import { TokenExpiredMessage } from 'src/constant';
+import { Device } from 'src/entity/device.entity';
+import { SignInByEmailAndCodeDto, SignInByEmailAndPassowrdDto } from './dto/signin-user.dto';
 
 export interface JwtPayload {
-  userId: number;
+  userId: string;
   email: string;
   username: string;
+  deviceId: string;
 }
+
+const jwtExpirationInSeconds = 24 * 60 * 60;
+const jwtRefreshExpirationInSeconds = 180 * 24 * 60 * 60;
 
 @Injectable()
 export class AuthService {
@@ -25,10 +36,12 @@ export class AuthService {
     private jwt: JwtService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Profile) private readonly profileRepository: Repository<Profile>,
+    @InjectRepository(Device) private readonly deviceRepository: Repository<Device>,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async signInByEmailAndPassword(email: string, password: string) {
+  async signInByEmailAndPassword(dto: SignInByEmailAndPassowrdDto) {
+    const { email, password, deviceId, deviceType } = dto;
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new ForbiddenException('用户不存在，请注册');
@@ -40,21 +53,60 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new ForbiddenException('用户名或者密码错误');
     }
-    const { token, refreshToken } = await this.jwtToken(user);
+    const { accessToken, refreshToken } = await this.jwtToken(user, deviceId);
 
-    user.profile.refreshToken = refreshToken;
-    // 180 days
-    user.profile.refreshTokenExpiresAt = Number(new Date(Date.now() + 180 * 24 * 60 * 60 * 1000));
+    await this.updateOrCreateDevice(deviceId, deviceType, user, refreshToken);
 
     await this.userRepository.save(user);
+
+    await this.storeAccessTokenInRedis(email, deviceId, accessToken);
+
     return {
       user,
-      token,
+      accessToken,
       refreshToken,
     };
   }
 
-  async signInByEmailAndCode(email: string, code: string) {
+  async updateOrCreateDevice(
+    deviceId: string,
+    deviceType: string,
+    user: User,
+    refreshToken: string,
+  ) {
+    const device = await this.deviceRepository.findOne({
+      where: { deviceId, user: { id: user.id } },
+    });
+    if (!device) {
+      // 设备不存在，创建新设备记录
+      const newDevice = this.deviceRepository.create({
+        deviceId,
+        deviceType,
+        user,
+        lastLoginAt: new Date(), // 设置最后登录时间为当前时间
+        refreshToken,
+        refreshTokenExpiresAt: Number(new Date(Date.now() + jwtRefreshExpirationInSeconds * 1000)),
+      });
+      await this.deviceRepository.save(newDevice);
+    } else {
+      
+      // 设备已存在，更新最后登录时间
+      device.lastLoginAt = new Date(); // 更新设备的最后登录时间为当前时间
+      device.refreshToken = refreshToken;
+      device.refreshTokenExpiresAt = Number(
+        new Date(Date.now() + jwtRefreshExpirationInSeconds * 1000),
+      );
+      console.info('device', device);
+      await this.deviceRepository.save(device);
+    }
+  }
+
+  async storeAccessTokenInRedis(email: string, deviceId: string, accessToken: string) {
+    await this.redis.set(`${email}_${deviceId}_token`, accessToken, 'EX', jwtExpirationInSeconds);
+  }
+
+  async signInByEmailAndCode(dto: SignInByEmailAndCodeDto) {
+    const { email, code, deviceId, deviceType } = dto;
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new ForbiddenException('用户不存在，请注册');
@@ -67,25 +119,27 @@ export class AuthService {
       this.redis.del(`${email}_code`);
     }
 
-    const { token, refreshToken } = await this.jwtToken(user);
-
-    user.profile.refreshToken = refreshToken;
-    // 180 days
-    user.profile.refreshTokenExpiresAt = Number(new Date(Date.now() + 180 * 24 * 60 * 60 * 1000));
+    const { accessToken, refreshToken } = await this.jwtToken(user, deviceId);
 
     await this.userRepository.save(user);
+
+    await this.updateOrCreateDevice(deviceId, deviceType, user, refreshToken);
+
+    await this.storeAccessTokenInRedis(email, deviceId, accessToken);
+
     return {
-      token,
+      accessToken,
       refreshToken,
     };
   }
 
-  async jwtToken(user: User) {
-    const token = await this.jwt.signAsync(
+  async jwtToken(user: User, deviceId: string) {
+    const accessToken = await this.jwt.signAsync(
       {
         userId: user.id,
         email: user.email,
         username: user.username,
+        deviceId,
       },
       {
         expiresIn: '1d',
@@ -101,43 +155,48 @@ export class AuthService {
       { expiresIn: '180 days' },
     );
     return {
-      token,
+      accessToken,
       refreshToken,
     };
   }
-  async refreshAccessToken(
-    refreshToken: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+
+  async generateAccessTokenFromRefreshToken(refreshToken: string) {
+    let decodedRefreshToken: JwtPayload;
+
     try {
-      const profile = await this.profileRepository.findOne({
-        where: { refreshToken: refreshToken },
-      });
-
-      if (!profile || profile.refreshTokenExpiresAt < Number(new Date())) {
-        throw new UnauthorizedException(TokenExpiredMessage);
-      }
-
-      return this.generateTokens(profile.user);
+      // 验证 refreshToken 是否有效
+      decodedRefreshToken = this.jwt.verify(refreshToken);
     } catch (error) {
-      throw new UnauthorizedException(TokenExpiredMessage);
+      // 如果无效，则抛出异常
+      throw new UnauthorizedException('无效的 refreshToken');
     }
-  }
 
-  async generateTokens(user: User): Promise<{ accessToken: string; refreshToken: string }> {
-    const accessToken = this.jwt.sign({ userId: user.id });
-    const refreshToken = this.jwt.sign({ userId: user.id }, { expiresIn: '180 days' });
+    // 从解码的 refreshToken 中获取用户 ID
+    const { userId, deviceId } = decodedRefreshToken;
 
-    const profile = await this.profileRepository.findOne({
-      where: {
-        id: user.profile.id,
-      },
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
     });
-    profile.refreshToken = refreshToken;
-    // 180天后过期
-    profile.refreshTokenExpiresAt = Number(new Date(Date.now() + 180 * 24 * 60 * 60 * 1000));
-    await this.profileRepository.save(profile);
 
-    return { accessToken, refreshToken };
+    const device = await this.deviceRepository.findOne({
+      where: { id: deviceId, user: { id: user.id } },
+    });
+
+    // 验证 refreshToken 是否存在和未过期
+    if (
+      !device ||
+      device.refreshToken !== refreshToken ||
+      device.refreshTokenExpiresAt < Date.now()
+    ) {
+      throw new UnauthorizedException('无效或过期的 refreshToken');
+    }
+
+    const { accessToken } = await this.jwtToken(user, deviceId);
+
+    // 返回新的 accessToken
+    return {
+      accessToken,
+    };
   }
 
   async signup(user: SignupUserDto) {
@@ -161,24 +220,22 @@ export class AuthService {
     this.redis.del(`${email}_code`);
     return res;
   }
+
+  async findUserDevices(userId: string): Promise<Device[]> {
+    return await this.deviceRepository.find({
+      where: { user: { id: userId } },
+      select: ['id', 'deviceId', 'deviceType', 'lastLoginAt'],
+    });
+  }
+
+  async forceLogoutDevice(userId: string, deviceId: string): Promise<void> {
+    const device = await this.deviceRepository.findOne({
+      where: { id: deviceId, user: { id: userId } },
+    });
+    if (device) {
+      await this.deviceRepository.remove(device);
+    } else {
+      throw new NotFoundException('设备不存在');
+    }
+  }
 }
-
-// import { Injectable } from '@nestjs/common';
-// import { RedisService } from 'nestjs-redis';
-
-// @Injectable()
-// export class RedisAuthService {
-//   constructor(private readonly redisService: RedisService) {}
-
-//   async setVerificationCode(email: string, code: string) {
-//     const client = await this.redisService.getClient();
-//     await client.set(email, code, 'EX', 60 * 30); // 设置过期时间为 30 分钟
-//   }
-
-//   async getVerificationCode(email: string) {
-//     const client = await this.redisService.getClient();
-//     const code = await client.get(email);
-//     await client.del(email); // 取出后删除
-//     return code;
-//   }
-// }

@@ -30,8 +30,8 @@ export class JwtGuard extends AuthGuard('jwt') {
       }
       throw error;
     }
-    const { email } = payload as JwtPayload;
-    const tokenCache = email ? await this.redis.get(`${email}_token`) : null;
+    const { email, deviceId } = payload as JwtPayload;
+    const tokenCache = email ? await this.redis.get(`${email}_${deviceId}_token`) : null;
     if (!payload || !email || tokenCache !== token) {
       throw new UnauthorizedException(TokenExpiredMessage);
     }

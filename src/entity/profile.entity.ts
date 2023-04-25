@@ -4,16 +4,15 @@ import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
+import { Device } from './device.entity';
 
-export enum AccountType {
-  EMAIL = 'email',
-  GITHUB = 'github',
-}
+
 
 export enum Gender {
   MALE = 'male',
@@ -42,17 +41,6 @@ export class Profile {
   @Expose()
   description: string;
 
-  @Column({ type: 'enum', enum: AccountType })
-  accountType: AccountType;
-
-  @Column({ type: 'text', nullable: true })
-  @Exclude()
-  refreshToken: string;
-
-  @Column({ type: 'bigint', nullable: true })
-  @Exclude()
-  refreshTokenExpiresAt: number;
-
   @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   @Expose()
@@ -62,8 +50,5 @@ export class Profile {
     this.gender = profile?.gender ?? Gender.OTHER;
     this.address = profile?.address ?? '';
     this.description = profile?.description ?? '';
-    this.accountType = profile?.accountType ?? AccountType.EMAIL;
-    this.refreshToken = profile?.refreshToken ?? '';
-    this.refreshTokenExpiresAt = profile?.refreshTokenExpiresAt ?? 0;
   }
 }

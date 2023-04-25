@@ -22,6 +22,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from './tag.entity';
 import { Comment } from './comment.entity';
 import { CollectionGroup } from './collectionGroup.entity';
+import { Device } from './device.entity';
+
+export enum AccountType {
+  EMAIL = 'email',
+  GITHUB = 'github',
+}
 
 @Entity()
 export class User {
@@ -41,6 +47,9 @@ export class User {
   @Column()
   @Exclude()
   password: string;
+
+  @Column({ type: 'enum', enum: AccountType })
+  accountType: AccountType;
 
   @ApiProperty()
   @OneToMany(() => Logs, logs => logs.user, { cascade: true })
@@ -74,6 +83,12 @@ export class User {
   @OneToMany(() => Comment, comment => comment.user, { cascade: true })
   comments: Comment[];
 
-  @OneToMany(() => CollectionGroup, collectionGroup => collectionGroup.user, { cascade: true, onDelete: 'CASCADE' })
+  @OneToMany(() => CollectionGroup, collectionGroup => collectionGroup.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   collectedInGroups: CollectionGroup[];
+
+  @OneToMany(() => Device, device => device.user, { cascade: true })
+  devices: Device[];
 }
