@@ -77,7 +77,7 @@ export class Material {
   tags: Tag[];
 
   @Expose()
-  @ManyToMany(() => Group, group => group.material)
+  @ManyToMany(() => Group, group => group.materials)
   @JoinTable({ name: 'material_group' })
   groups: Group[];
 

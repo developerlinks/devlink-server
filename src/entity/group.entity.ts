@@ -37,7 +37,7 @@ export class Group {
   user: User;
 
   @ManyToMany(() => Material, material => material.groups)
-  material: Material[];
+  materials: Material[];
 
   constructor(partial?: Partial<Group>) {
     this.name = '';

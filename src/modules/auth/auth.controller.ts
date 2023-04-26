@@ -42,7 +42,6 @@ export class AuthController {
     const { user, accessToken, refreshToken } = await this.authService.signInByEmailAndPassword(
       dto,
     );
-    // 设置token
     return {
       user,
       accessToken,

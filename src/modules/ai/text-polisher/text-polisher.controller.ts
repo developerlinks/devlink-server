@@ -3,8 +3,8 @@ import { TextPolisherService } from './text-polisher.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TextPolishDto } from './dto/text-polisher.dto';
 
-@ApiTags('OpenAi')
-@Controller('polish')
+@ApiTags('AI')
+@Controller('ai/text-polisher')
 export class TextPolisherController {
   constructor(private readonly textPolisherService: TextPolisherService) {}
 

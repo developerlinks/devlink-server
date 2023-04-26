@@ -14,6 +14,8 @@ export class TypeormFilter implements ExceptionFilter {
     const request = ctx.getRequest();
     const msg: unknown = exception['response'] || '网络错误';
 
+    console.info('TypeormError', exception);
+
     response.status(500).json({
       timestamp: new Date().toISOString(),
       message: msg,

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
-export class GetMyGroupDto {
+export class QueryBaseDto {
   @ApiProperty({ description: '页数', required: false })
   @IsOptional()
   page?: number;
@@ -11,7 +11,7 @@ export class GetMyGroupDto {
   limit?: number;
 }
 
-export class GetGroupDto extends GetMyGroupDto {
+export class GetGroupDto extends QueryBaseDto {
 
   @ApiProperty({ description: '名字', required: false })
   @IsOptional()
