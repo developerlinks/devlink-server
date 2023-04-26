@@ -26,7 +26,7 @@ import { getUserDto } from './dto/get-user.dto';
 import { CreateUserPipe } from './pipes/create-user.pipe';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { TokenExpiredMessage } from 'src/constant';
 
@@ -106,5 +106,13 @@ export class UserController {
     }
     //TODO: 判断是否是管理员
     return this.userService.remove(id);
+  }
+
+  // 根据用户ip查询地址
+  @ApiOperation({ summary: '根据用户ip查询地址' })
+  @ApiQuery({ name: 'ip', type: String, description: '用户的IP地址' })
+  @Post('ip')
+  async getIpInfo(@Query('ip') ip: string): Promise<any> {
+    return this.userService.getIpInfo(ip);
   }
 }

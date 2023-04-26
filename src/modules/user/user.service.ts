@@ -1,5 +1,7 @@
 import { ForbiddenException, Injectable, Put } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import fetch from 'node-fetch';
+import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '../../entity/user.entity';
@@ -22,6 +24,7 @@ export class UserService {
     @InjectRepository(Logs) private readonly logsRepository: Repository<Logs>,
     @InjectRepository(Roles) private readonly rolesRepository: Repository<Roles>,
     @InjectRedis() private readonly redis: Redis,
+    private configService: ConfigService
   ) {}
 
   async create(user: Partial<User>) {
@@ -79,14 +82,8 @@ export class UserService {
       relations: {
         profile: true,
         roles: true,
-        group: true,
-        likes: true,
-        materials: true,
-        followers: true,
-        following: true,
       },
       where: {
-        // AND OR
         username,
         email,
         profile: {
@@ -207,5 +204,22 @@ export class UserService {
         console.log('Failed to create admin account: ', error.message);
       }
     }
+  }
+
+  getIpInfo(ip: string) {
+    const APPCODE = this.configService.get('APPCODE')
+    const headers = {
+      'Content-Type': 'application/json;charset=UTF-8',
+      'X-Bce-Signature': `AppCode/${APPCODE}`,
+    };
+
+    const url = `https://ipaddquery.api.bdymkt.com/ip/query?ip=${ip}`;
+
+    const options = {
+      method: 'POST',
+      headers: headers,
+    };
+
+    return fetch(url, options).then((res) => res.json());
   }
 }
