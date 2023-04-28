@@ -64,6 +64,6 @@ export class GroupController {
     }
     const userId = req.user.userId;
 
-    return this.groupService.getMaterialsByGroupId(groupId, userId, query);
+    return this.groupService.getMaterialsByGroupId(groupId, query);
   }
 }

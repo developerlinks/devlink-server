@@ -49,15 +49,12 @@ export class GroupService {
   }
 
   // 查询该分组下的物料
-  async getMaterialsByGroupId(groupId: string, userId: string, query: QueryBaseDto) {
+  async getMaterialsByGroupId(groupId: string, query: QueryBaseDto) {
     const { limit, page } = query;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
     const [materials, total] = await this.materialRepository.findAndCount({
       where: {
-        user: {
-          id: userId,
-        },
         groups:{
           id: groupId,
         }

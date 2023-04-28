@@ -1,6 +1,5 @@
 import { ForbiddenException, Injectable, Put } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import fetch from 'node-fetch';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -206,20 +205,4 @@ export class UserService {
     }
   }
 
-  getIpInfo(ip: string) {
-    const APPCODE = this.configService.get('APPCODE')
-    const headers = {
-      'Content-Type': 'application/json;charset=UTF-8',
-      'X-Bce-Signature': `AppCode/${APPCODE}`,
-    };
-
-    const url = `https://ipaddquery.api.bdymkt.com/ip/query?ip=${ip}`;
-
-    const options = {
-      method: 'POST',
-      headers: headers,
-    };
-
-    return fetch(url, options).then((res) => res.json());
-  }
 }

@@ -76,8 +76,7 @@ export class CollectionGroupController {
     if (!req.user.userId) {
       throw new UnauthorizedException(TokenExpiredMessage);
     }
-    const userId = req.user.userId;
-    return this.collectionGroupService.getMaterialInGroup(id, userId, query);
+    return this.collectionGroupService.getMaterialInGroup(id, query);
   }
 
   @Delete(':id')

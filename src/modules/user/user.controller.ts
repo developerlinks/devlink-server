@@ -108,11 +108,4 @@ export class UserController {
     return this.userService.remove(id);
   }
 
-  // 根据用户ip查询地址
-  @ApiOperation({ summary: '根据用户ip查询地址' })
-  @ApiQuery({ name: 'ip', type: String, description: '用户的IP地址' })
-  @Post('ip')
-  async getIpInfo(@Query('ip') ip: string): Promise<any> {
-    return this.userService.getIpInfo(ip);
-  }
 }

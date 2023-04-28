@@ -82,9 +82,6 @@ importers:
       nest-winston:
         specifier: ^1.8.0
         version: 1.9.1(@nestjs/common@9.3.9)(winston@3.8.2)
-      node-fetch:
-        specifier: ^2.6.9
-        version: 2.6.9
       nodemailer:
         specifier: ^6.9.1
         version: 6.9.1

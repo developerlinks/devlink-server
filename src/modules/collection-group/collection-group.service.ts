@@ -96,19 +96,24 @@ export class CollectionGroupService {
   }
 
   // 查询该收藏分组下的物料
-  async getMaterialInGroup(id: string, userId: string, query: GetMaterialInGroupDto) {
+  async getMaterialInGroup(id: string, query: GetMaterialInGroupDto) {
     const { limit, page } = query;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
-    const [materials, total] = await this.collectionGroupRepository.findAndCount({
+    const [materials, total] = await this.materialRepository.findAndCount({
       where: {
-        id,
+        collectedInGroups:{
+          id: id
+        }
       },
       take,
       skip,
-      relations: ['collectedMaterials'],
     });
 
+    if (materials.length === 0) {
+      return new NotFoundException('不存在');
+    }
+    
     const totalPages = Math.ceil(total / limit);
     return {
       materials,
