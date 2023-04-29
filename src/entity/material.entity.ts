@@ -37,7 +37,11 @@ export class Material {
 
   @Expose()
   @Column()
-  description: string = ''; // TODO:
+  abstract: string = '';
+
+  @Expose()
+  @Column()
+  description: string = '';
 
   @Expose()
   @Column()

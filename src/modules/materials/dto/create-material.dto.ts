@@ -19,6 +19,16 @@ export class CreateMaterialDto {
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
+  abstract: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  description: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
   installCommand: string;
 
   @IsString()

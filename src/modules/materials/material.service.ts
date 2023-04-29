@@ -57,17 +57,7 @@ export class MaterialService {
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
 
-    const [data, total] = await this.materialsRepository.findAndCount({
-      select: {
-        id: true,
-        name: true,
-        npmName: true,
-        version: true,
-        isPrivate: true,
-        description: true,
-        installCommand: true,
-        startCommand: true,
-      },
+    const [materials, total] = await this.materialsRepository.findAndCount({
       relations: {
         tags: true,
         user: true,
@@ -87,7 +77,7 @@ export class MaterialService {
       skip,
     });
     const totalPages = Math.ceil(total / limit);
-    return { data, total, totalPages };
+    return { materials, total, totalPages };
   }
 
   async findMySelf(id: string) {
