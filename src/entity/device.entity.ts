@@ -23,6 +23,10 @@ export class Device {
   @Column()
   @Expose()
   deviceType: string;
+  
+  @Column()
+  @Expose()
+  clientIp: string;
 
   @Column()
   lastLoginAt: Date;

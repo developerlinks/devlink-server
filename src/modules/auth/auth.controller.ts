@@ -13,13 +13,20 @@ import {
   UnauthorizedException,
   Param,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
-
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { AuthService, JwtPayload } from './auth.service';
 import { SignInByEmailAndPassowrdDto, SignInByEmailAndCodeDto } from './dto/signin-user.dto';
 import { EmailService } from '../mail/mail.service';
-import { ApiOperation, ApiOkResponse, ApiBody, ApiTags, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiOkResponse,
+  ApiBody,
+  ApiTags,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger';
 import { SignupUserDto } from './dto/signup-user.dto';
 import { SendCodeDto } from 'src/modules/mail/dto/send-code.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
@@ -38,9 +45,10 @@ export class AuthController {
 
   @ApiOperation({ summary: '邮箱&密码 登录' })
   @Post('/signin_by_password')
-  async signInByEmailAndPassword(@Body() dto: SignInByEmailAndPassowrdDto) {
+  async signInByEmailAndPassword(@Body() dto: SignInByEmailAndPassowrdDto, @Req() req: Request) {
     const { user, accessToken, refreshToken } = await this.authService.signInByEmailAndPassword(
       dto,
+      req,
     );
     return {
       user,
@@ -51,8 +59,8 @@ export class AuthController {
 
   @ApiOperation({ summary: '邮箱&验证码 登录' })
   @Post('/signin_by_code')
-  async signInByEmailAndcode(@Body() dto: SignInByEmailAndCodeDto) {
-    const { accessToken, refreshToken } = await this.authService.signInByEmailAndCode(dto);
+  async signInByEmailAndcode(@Body() dto: SignInByEmailAndCodeDto, @Req() req: Request) {
+    const { accessToken, refreshToken } = await this.authService.signInByEmailAndCode(dto, req);
     return {
       accessToken,
       refreshToken,

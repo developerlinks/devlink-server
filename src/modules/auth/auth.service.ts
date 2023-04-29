@@ -4,6 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { UserService } from 'src/modules/user/user.service';
 // import { getUserDto } from '../user/dto/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -40,7 +41,8 @@ export class AuthService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  async signInByEmailAndPassword(dto: SignInByEmailAndPassowrdDto) {
+  async signInByEmailAndPassword(dto: SignInByEmailAndPassowrdDto, req: Request) {
+    const clientIp = this.getClientIp(req);
     const { email, password, deviceId, deviceType } = dto;
     const user = await this.userService.findByEmail(email);
     if (!user) {
@@ -55,7 +57,7 @@ export class AuthService {
     }
     const { accessToken, refreshToken } = await this.jwtToken(user, deviceId);
 
-    await this.updateOrCreateDevice(deviceId, deviceType, user, refreshToken);
+    await this.updateOrCreateDevice(deviceId, deviceType, user, refreshToken, clientIp);
 
     await this.userRepository.save(user);
 
@@ -73,6 +75,7 @@ export class AuthService {
     deviceType: string,
     user: User,
     refreshToken: string,
+    clientIp: string,
   ) {
     const device = await this.deviceRepository.findOne({
       where: { deviceId, user: { id: user.id } },
@@ -82,6 +85,7 @@ export class AuthService {
       const newDevice = this.deviceRepository.create({
         deviceId,
         deviceType,
+        clientIp,
         user,
         lastLoginAt: new Date(), // 设置最后登录时间为当前时间
         refreshToken,
@@ -89,10 +93,10 @@ export class AuthService {
       });
       await this.deviceRepository.save(newDevice);
     } else {
-      
       // 设备已存在，更新最后登录时间
       device.lastLoginAt = new Date(); // 更新设备的最后登录时间为当前时间
       device.refreshToken = refreshToken;
+      device.clientIp = clientIp;
       device.refreshTokenExpiresAt = Number(
         new Date(Date.now() + jwtRefreshExpirationInSeconds * 1000),
       );
@@ -101,12 +105,28 @@ export class AuthService {
     }
   }
 
+  private getClientIp(req: Request): string {
+    const xForwardedFor = req.headers['x-forwarded-for'];
+    if (Array.isArray(xForwardedFor)) {
+      return xForwardedFor[0] || 'unknown';
+    } else if (typeof xForwardedFor === 'string') {
+      return xForwardedFor.split(',')[0].trim() || 'unknown';
+    } else if (req.connection && req.connection.remoteAddress) {
+      return req.connection.remoteAddress;
+    } else if (req.socket && req.socket.remoteAddress) {
+      return req.socket.remoteAddress;
+    } else {
+      return 'unknown';
+    }
+  }
+
   async storeAccessTokenInRedis(email: string, deviceId: string, accessToken: string) {
     await this.redis.set(`${email}_${deviceId}_token`, accessToken, 'EX', jwtExpirationInSeconds);
   }
 
-  async signInByEmailAndCode(dto: SignInByEmailAndCodeDto) {
+  async signInByEmailAndCode(dto: SignInByEmailAndCodeDto, req: Request) {
     const { email, code, deviceId, deviceType } = dto;
+    const clientIp = this.getClientIp(req);
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new ForbiddenException('用户不存在，请注册');
@@ -123,7 +143,7 @@ export class AuthService {
 
     await this.userRepository.save(user);
 
-    await this.updateOrCreateDevice(deviceId, deviceType, user, refreshToken);
+    await this.updateOrCreateDevice(deviceId, deviceType, user, refreshToken, clientIp);
 
     await this.storeAccessTokenInRedis(email, deviceId, accessToken);
 
@@ -224,7 +244,10 @@ export class AuthService {
   async findUserDevices(userId: string): Promise<Device[]> {
     return await this.deviceRepository.find({
       where: { user: { id: userId } },
-      select: ['id', 'deviceId', 'deviceType', 'lastLoginAt'],
+      select: ['id', 'deviceId', 'deviceType', 'lastLoginAt', 'clientIp'],
+      order: {
+        lastLoginAt: 'DESC',
+      },
     });
   }
 
