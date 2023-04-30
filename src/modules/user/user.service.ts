@@ -15,6 +15,9 @@ import { Gender, Profile } from '../../entity/profile.entity';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { CollectionGroup } from 'src/entity/collectionGroup.entity';
+import { FuzzyQueryDto } from './dto/fuzzy-query.dto';
+import { Material } from 'src/entity/material.entity';
+import { Tag } from 'src/entity/tag.entity';
 
 @Injectable()
 export class UserService {
@@ -22,6 +25,10 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Logs) private readonly logsRepository: Repository<Logs>,
     @InjectRepository(Roles) private readonly rolesRepository: Repository<Roles>,
+    @InjectRepository(Material)
+    private materialRepository: Repository<Material>,
+    @InjectRepository(Tag)
+    private tagRepository: Repository<Tag>,
     @InjectRedis() private readonly redis: Redis,
     private configService: ConfigService,
   ) {}
@@ -218,4 +225,71 @@ export class UserService {
       }
     }
   }
+
+  async fuzzyQuery(dto: FuzzyQueryDto) {
+    const { limit, page, keyword } = dto;
+    const take = limit || 10;
+    const skip = ((page || 1) - 1) * take;
+
+    const buildQuery = async (
+      repository: Repository<any>,
+      entity: string,
+      condition: string,
+      reason: string,
+    ) => {
+      const [items, total] = await buildQueryBuilder(
+        repository,
+        entity,
+        condition,
+        keyword,
+        take,
+        skip,
+      );
+      return {
+        reason,
+        items,
+        total,
+        totalPages: Math.ceil(total / limit),
+      };
+    };
+
+    const buildQueryBuilder = (
+      repository: Repository<any>,
+      entity: string,
+      condition: string,
+      keyword: string,
+      take: number,
+      skip: number,
+    ) => {
+      return repository
+        .createQueryBuilder(entity)
+        .where(condition, { keyword: `%${keyword}%` })
+        .orderBy(`${entity}.createdAt`, 'ASC')
+        .take(take)
+        .skip(skip)
+        .getManyAndCount();
+    };
+
+    const queries = [
+      buildQuery(
+        this.materialRepository,
+        'Material',
+        'LOWER(Material.name) LIKE LOWER(:keyword)',
+        'material.name',
+      ),
+      buildQuery(
+        this.userRepository,
+        'User',
+        'LOWER(User.username) LIKE LOWER(:keyword)',
+        'user.username',
+      ),
+      buildQuery(this.tagRepository, 'Tag', 'LOWER(Tag.name) LIKE LOWER(:keyword)', 'tag.name'),
+    ];
+
+    const combinedResults = await Promise.all(queries);
+    return {
+      data: combinedResults,
+    };
+  }
+
 }

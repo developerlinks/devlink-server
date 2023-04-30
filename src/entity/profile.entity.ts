@@ -50,10 +50,6 @@ export class Profile {
   @Expose()
   user: User;
 
-  @Expose()
-  @CreateDateColumn()
-  createdAt: Date;
-
   constructor(profile?: Partial<Profile>) {
     this.gender = profile?.gender ?? Gender.OTHER;
     this.address = profile?.address ?? '';

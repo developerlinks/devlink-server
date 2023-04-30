@@ -29,6 +29,7 @@ import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { TokenExpiredMessage } from 'src/constant';
+import { FuzzyQueryDto } from './dto/fuzzy-query.dto';
 
 @ApiTags('用户')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -108,4 +109,10 @@ export class UserController {
     return this.userService.remove(id);
   }
 
+  @ApiOperation({ summary: '模糊查询' })
+  @Get('fuzzy_query')
+  fuzzyQuery(@Query() dto: FuzzyQueryDto) {
+
+    return this.userService.fuzzyQuery(dto);
+  }
 }

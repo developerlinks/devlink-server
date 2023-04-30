@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Group } from '../../entity/group.entity';
@@ -113,12 +118,27 @@ export class MaterialService {
     const { tags } = query;
   }
 
-  findOne(id: string) {
-    return this.materialsRepository.findOne({
+  async findOne(id: string) {
+    const material = await this.materialsRepository.findOne({
       where: {
         id,
       },
+      relations: {
+        user: {
+          profile: true,
+          likes: true,
+          followers: true,
+          following: true,
+          materials: true,
+        },
+        tags: true,
+        groups: true,
+      },
     });
+    if (!material) {
+      throw new NotFoundException('未找到该物料');
+    }
+    return material;
   }
 
   // update Material

@@ -1,9 +1,10 @@
 import { Roles } from 'src/entity/roles.entity';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
@@ -50,6 +51,10 @@ export class User {
 
   @Column({ type: 'enum', enum: AccountType })
   accountType: AccountType;
+
+  @Expose()
+  @CreateDateColumn()
+  createdAt: Date;
 
   @ApiProperty()
   @OneToMany(() => Logs, logs => logs.user, { cascade: true })

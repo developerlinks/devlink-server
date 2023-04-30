@@ -20,7 +20,7 @@ import { UpdateMaterialDto } from './dto/update-material.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { CreateMaterialPipe } from './pipes/create-material.pipe';
 import { Material } from '../../entity/material.entity';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetMaterialByTagsDto, GetMaterialDto } from './dto/get-material.dto';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { TokenExpiredMessage } from 'src/constant';
@@ -41,6 +41,13 @@ export class MaterialController {
       throw new UnauthorizedException(TokenExpiredMessage);
     }
     return this.materialService.create(req.user.userId, dto);
+  }
+
+  @ApiOperation({ summary: '获取物料详情' })
+  @ApiResponse({ status: 200, description: '成功获取物料详情' })
+  @Get('detail')
+  getUserProfile(@Query('id') id: string) {
+    return this.materialService.findOne(id);
   }
 
   @Get()

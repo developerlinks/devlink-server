@@ -7,9 +7,11 @@ import { Logs } from 'src/entity/logs.entity';
 import { Group } from '../../entity/group.entity';
 import { Profile } from 'src/entity/profile.entity';
 import { User } from 'src/entity/user.entity';
+import { Tag } from 'src/entity/tag.entity';
+import { Material } from 'src/entity/material.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Logs, Roles, Group, Profile])],
+  imports: [TypeOrmModule.forFeature([User, Logs, Roles, Group, Profile, Tag, Material])],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

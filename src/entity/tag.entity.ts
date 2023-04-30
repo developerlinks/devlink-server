@@ -6,7 +6,6 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryColumn,
-  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Material } from './material.entity';
