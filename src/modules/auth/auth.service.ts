@@ -16,7 +16,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../entity/user.entity';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { SignupUserDto } from './dto/signup-user.dto';
-import { TokenExpiredMessage } from 'src/constant';
+import { KickedOutTips } from 'src/constant';
 import { Device } from 'src/entity/device.entity';
 import { SignInByEmailAndCodeDto, SignInByEmailAndPassowrdDto } from './dto/signin-user.dto';
 
@@ -125,7 +125,7 @@ export class AuthService {
   }
 
   async deleteAccessTokenInRedis(email: string, deviceId: string) {
-    await this.redis.del(`${email}_${deviceId}_token`);
+    await this.redis.set(`${email}_${deviceId}_token`, KickedOutTips, 'EX', jwtExpirationInSeconds);
   }
 
   async signInByEmailAndCode(dto: SignInByEmailAndCodeDto, req: Request) {
@@ -261,6 +261,7 @@ export class AuthService {
   async forceLogoutDevice(userId: string, deviceId: string): Promise<void> {
     const device = await this.deviceRepository.findOne({
       where: { id: deviceId, user: { id: userId } },
+      relations: ['user'],
     });
     if (device) {
       await this.deviceRepository.remove(device);
