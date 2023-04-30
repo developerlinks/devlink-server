@@ -124,6 +124,10 @@ export class AuthService {
     await this.redis.set(`${email}_${deviceId}_token`, accessToken, 'EX', jwtExpirationInSeconds);
   }
 
+  async deleteAccessTokenInRedis(email: string, deviceId: string) {
+    await this.redis.del(`${email}_${deviceId}_token`);
+  }
+
   async signInByEmailAndCode(dto: SignInByEmailAndCodeDto, req: Request) {
     const { email, code, deviceId, deviceType } = dto;
     const clientIp = this.getClientIp(req);
@@ -263,5 +267,6 @@ export class AuthService {
     } else {
       throw new NotFoundException('设备不存在');
     }
+    await this.deleteAccessTokenInRedis(device.user.email, device.deviceId);
   }
 }
