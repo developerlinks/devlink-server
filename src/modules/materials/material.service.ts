@@ -53,21 +53,23 @@ export class MaterialService {
   }
 
   async findAll(query: GetMaterialDto) {
-    const { limit, page, name, npmName, isPrivate, author, tag } = query;
+    const { limit, page, name, npmName, isPrivate, authorId, tag } = query;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
 
     const [materials, total] = await this.materialsRepository.findAndCount({
       relations: {
         tags: true,
-        user: true,
+        user: {
+          profile: true,
+        },
       },
       where: {
         name,
         npmName,
         isPrivate,
         user: {
-          username: author,
+          id: authorId,
         },
         tags: {
           name: tag,
@@ -87,7 +89,13 @@ export class MaterialService {
           id,
         },
       },
-      relations: ['user', 'tags', 'groups'],
+      relations: {
+        user: {
+          profile: true,
+        },
+        tags: true,
+        groups: true,
+      },
     });
     return {
       materials,

@@ -44,7 +44,7 @@ export class UserController {
   @ApiOperation({ summary: '获取用户资料' })
   @ApiResponse({ status: 200, description: '成功获取用户资料' })
   @Get('profile')
-  getUserProfile(@Query('id', ParseIntPipe) id: string) {
+  getUserProfile(@Query('id') id: string) {
     return this.userService.findProfile(id);
   }
 

@@ -2,6 +2,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { User } from 'src/entity/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   OneToMany,
@@ -11,7 +12,6 @@ import {
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Device } from './device.entity';
-
 
 
 export enum Gender {
@@ -31,6 +31,10 @@ export class Profile {
 
   @Expose()
   @Column({ nullable: true })
+  avatar: string;
+
+  @Expose()
+  @Column({ nullable: true })
   photo: string;
 
   @Column()
@@ -45,6 +49,10 @@ export class Profile {
   @JoinColumn()
   @Expose()
   user: User;
+
+  @Expose()
+  @CreateDateColumn()
+  createdAt: Date;
 
   constructor(profile?: Partial<Profile>) {
     this.gender = profile?.gender ?? Gender.OTHER;

@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, Put } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, Put } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -23,7 +23,7 @@ export class UserService {
     @InjectRepository(Logs) private readonly logsRepository: Repository<Logs>,
     @InjectRepository(Roles) private readonly rolesRepository: Repository<Roles>,
     @InjectRedis() private readonly redis: Redis,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   async create(user: Partial<User>) {
@@ -123,6 +123,16 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     const userTemp = await this.findProfile(id);
 
+    const { address, description, gender, avatar, photo } = updateUserDto;
+
+    Object.assign(userTemp.profile, {
+      ...(address && { address }),
+      ...(description && { description }),
+      ...(gender && { gender }),
+      ...(avatar && { avatar }),
+      ...(photo && { photo }),
+    });
+
     const newUser = this.userRepository.merge(userTemp, updateUserDto);
     return this.userRepository.save(newUser);
   }
@@ -149,8 +159,8 @@ export class UserService {
     return this.userRepository.remove(user);
   }
 
-  findProfile(id: string) {
-    return this.userRepository.findOne({
+  async findProfile(id: string) {
+    const userInfo = await this.userRepository.findOne({
       where: {
         id,
       },
@@ -163,6 +173,10 @@ export class UserService {
         following: true,
       },
     });
+    if (!userInfo) {
+      throw new NotFoundException('用户不存在');
+    }
+    return userInfo;
   }
 
   findLogByGroup(id: number) {
@@ -204,5 +218,4 @@ export class UserService {
       }
     }
   }
-
 }

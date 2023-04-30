@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import { Gender } from '../../../entity/profile.entity';
 
 export class UpdateUserDto {
   @ApiProperty({ description: '用户名' })
   @IsOptional()
+  @Length(6, 20)
   @IsString()
   username?: string;
 
@@ -23,6 +24,11 @@ export class UpdateUserDto {
   @IsString()
   photo?: string;
 
+  @ApiProperty({ description: '头像' })
+  @IsOptional()
+  @IsString()
+  avatar?: string;
+
   @ApiProperty({ description: '地址' })
   @IsOptional()
   @IsString()
@@ -30,6 +36,7 @@ export class UpdateUserDto {
 
   @ApiProperty({ description: '个人描述' })
   @IsOptional()
+  @Length(0, 200)
   @IsString()
   description?: string;
 }

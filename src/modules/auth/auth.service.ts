@@ -241,14 +241,17 @@ export class AuthService {
     return res;
   }
 
-  async findUserDevices(userId: string): Promise<Device[]> {
-    return await this.deviceRepository.find({
+  async findUserDevices(userId: string) {
+    const devices = await this.deviceRepository.find({
       where: { user: { id: userId } },
       select: ['id', 'deviceId', 'deviceType', 'lastLoginAt', 'clientIp'],
       order: {
         lastLoginAt: 'DESC',
       },
     });
+    return {
+      devices,
+    };
   }
 
   async forceLogoutDevice(userId: string, deviceId: string): Promise<void> {

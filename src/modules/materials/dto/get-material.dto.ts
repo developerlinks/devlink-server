@@ -23,7 +23,7 @@ export class GetMaterialDto {
   @ApiProperty({ description: '拥有者', required: false })
   @IsOptional()
   @IsString()
-  author?: string;
+  authorId?: string;
 
   @ApiProperty({ description: '是否公开', required: false })
   @IsOptional()
