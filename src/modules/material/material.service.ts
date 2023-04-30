@@ -75,6 +75,9 @@ export class MaterialService {
           name: tag,
         },
       },
+      order: {
+        createdAt: 'DESC',
+      },
       take,
       skip,
     });
@@ -95,6 +98,9 @@ export class MaterialService {
         },
         tags: true,
         groups: true,
+      },
+      order: {
+        createdAt: 'DESC',
       },
     });
     return {

@@ -9,7 +9,7 @@ import { connectionParams } from '../ormconfig';
 import { LogsModule } from './modules/logs-m/logs.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { MaterialModule } from './modules/materials/material.module';
+import { MaterialModule } from './modules/material/material.module';
 import { ConfigEnum } from './enum/config.enum';
 import { GroupModule } from './modules/group/group.module';
 import { TagModule } from './modules/tag/tag.module';
