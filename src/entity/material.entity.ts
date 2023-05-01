@@ -36,12 +36,16 @@ export class Material {
   npmName: string;
 
   @Expose()
-  @Column()
-  abstract: string = '';
+  @Column({ nullable: true })
+  photo: string;
 
   @Expose()
-  @Column()
-  description: string = '';
+  @Column({ nullable: true })
+  abstract: string;
+
+  @Expose()
+  @Column({ nullable: true })
+  description: string;
 
   @Expose()
   @Column()

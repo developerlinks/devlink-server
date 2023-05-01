@@ -19,6 +19,11 @@ export class CreateMaterialDto {
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
+  photo: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
   abstract: string;
 
   @IsString()

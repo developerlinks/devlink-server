@@ -77,14 +77,6 @@ export class UserService {
     const skip = ((page || 1) - 1) * take;
 
     const [data, total] = await this.userRepository.findAndCount({
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        profile: {
-          gender: true,
-        },
-      },
       relations: {
         profile: true,
         roles: true,
@@ -230,12 +222,24 @@ export class UserService {
     const { limit, page, keyword } = dto;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
-
+    if (!keyword) {
+      return {
+        data: [
+          {
+            reason: '关键词为空',
+            items: [],
+            total: 0,
+            totalPages: 0,
+          },
+        ],
+      };
+    }
     const buildQuery = async (
       repository: Repository<any>,
       entity: string,
       condition: string,
       reason: string,
+      includeUser: boolean = false,
     ) => {
       const [items, total] = await buildQueryBuilder(
         repository,
@@ -261,13 +265,20 @@ export class UserService {
       take: number,
       skip: number,
     ) => {
-      return repository
+      const query = repository
         .createQueryBuilder(entity)
         .where(condition, { keyword: `%${keyword}%` })
         .orderBy(`${entity}.createdAt`, 'ASC')
         .take(take)
-        .skip(skip)
-        .getManyAndCount();
+        .skip(skip);
+
+      if (entity === 'Material') {
+        query.leftJoinAndSelect(`${entity}.user`, 'user');
+        query.leftJoinAndSelect(`user.profile`, 'profile');
+        query.leftJoinAndSelect(`${entity}.tags`, 'tags');
+      }
+
+      return query.getManyAndCount();
     };
 
     const queries = [
@@ -291,5 +302,4 @@ export class UserService {
       data: combinedResults,
     };
   }
-
 }
