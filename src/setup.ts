@@ -6,7 +6,9 @@ import rateLimit from 'express-rate-limit';
 import { AllExceptionFilter } from './filters/all-exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
 import { TransformInterceptor } from './interceptors/transform.interceptor';
+import { StatusService } from './modules/status/status.service';
 import { UserService } from './modules/user/user.service';
+import { ConfigService } from '@nestjs/config';
 
 export const setupApp = (app: INestApplication) => {
   const config = getServerConfig();
@@ -17,7 +19,9 @@ export const setupApp = (app: INestApplication) => {
   const httpAdapter = app.get(HttpAdapterHost);
   // // 全局Filter只能有一个
   const logger = new Logger();
-  app.useGlobalFilters(new AllExceptionFilter(logger, httpAdapter));
+  app.useGlobalFilters(
+    new AllExceptionFilter(logger, httpAdapter, app.get(StatusService), app.get(ConfigService)),
+  );
   app.useGlobalInterceptors(new TransformInterceptor());
   // 全局拦截器
   app.useGlobalPipes(
@@ -60,10 +64,10 @@ export const setupApp = (app: INestApplication) => {
 
         return callback(null, true);
       },
-    })
+    });
     const adminAccountService = app.get(UserService);
     adminAccountService.createAdminAccount();
   } else {
-    app.enableCors()
+    app.enableCors();
   }
 };
