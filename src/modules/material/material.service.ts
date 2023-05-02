@@ -40,8 +40,6 @@ export class MaterialService {
         )
       : [];
 
-    console.info('groups', groups, 'tags', tags);
-
     const user = await this.userRepository.findOne({
       where: {
         id: userId,

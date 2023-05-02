@@ -45,20 +45,24 @@ export class AllExceptionFilter implements ExceptionFilter {
       message: msg,
     };
 
-    // statuspage
-    const now = new Date();
-    const timeDiffInHours = (now.getTime() - this.lastStatusUpdateTime.getTime()) / 1000 / 3600;
+    const isProd = process.env.NODE_ENV === 'production';
 
-    if (timeDiffInHours >= 24 && httpStatus === HttpStatus.INTERNAL_SERVER_ERROR) {
-      const componentId = this.configService.get(ConfigEnum.COMPONENT_ID);
-      const pageId = this.configService.get(ConfigEnum.PAGE_ID);
-      const statusApiKey = this.configService.get(ConfigEnum.STATUSPAGE_API_KEY);
+    if (isProd) {
+      // statuspage
+      const now = new Date();
+      const timeDiffInHours = (now.getTime() - this.lastStatusUpdateTime.getTime()) / 1000 / 3600;
 
-      const status = ComponentStatus.PartialOutage
+      if (timeDiffInHours >= 24 && httpStatus === HttpStatus.INTERNAL_SERVER_ERROR) {
+        const componentId = this.configService.get(ConfigEnum.COMPONENT_ID);
+        const pageId = this.configService.get(ConfigEnum.PAGE_ID);
+        const statusApiKey = this.configService.get(ConfigEnum.STATUSPAGE_API_KEY);
 
-      this.statusService.updateComponentStatus(componentId, status, pageId, statusApiKey);
-      this.lastStatusUpdateTime = now;
-      // TODO: 发送邮件给管理员
+        const status = ComponentStatus.PartialOutage;
+
+        this.statusService.updateComponentStatus(componentId, status, pageId, statusApiKey);
+        this.lastStatusUpdateTime = now;
+        // TODO: 发送邮件给管理员
+      }
     }
 
     this.logger.error('[devLink]', responseBody);

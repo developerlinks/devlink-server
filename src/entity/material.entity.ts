@@ -40,11 +40,11 @@ export class Material {
   photo: string;
 
   @Expose()
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'mediumtext' })
   abstract: string;
 
   @Expose()
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'longtext' })
   description: string;
 
   @Expose()
