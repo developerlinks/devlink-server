@@ -239,7 +239,7 @@ export class UserService {
       entity: string,
       condition: string,
       reason: string,
-      includeUser: boolean = false,
+      // includeUser: boolean = false,
     ) => {
       const [items, total] = await buildQueryBuilder(
         repository,

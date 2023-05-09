@@ -1,5 +1,39 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString, IsArray } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsArray,
+  ValidateIf,
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationOptions,
+  registerDecorator,
+} from 'class-validator';
+
+@ValidatorConstraint({ async: true })
+class IsStringOrStringArrayConstraint implements ValidatorConstraintInterface {
+  validate(value: string | string[], args: ValidationArguments) {
+    return typeof value === 'string' || Array.isArray(value);
+  }
+
+  defaultMessage(args: ValidationArguments) {
+    return 'The value must be a string or array of strings';
+  }
+}
+
+function IsStringOrStringArray(validationOptions?: ValidationOptions) {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      name: 'isStringOrStringArray',
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: IsStringOrStringArrayConstraint,
+    });
+  };
+}
 
 export class GetMaterialDto {
   @ApiProperty({ description: '页数', required: false })
@@ -30,15 +64,13 @@ export class GetMaterialDto {
   @IsBoolean()
   isPrivate?: boolean;
 
-  @ApiProperty({ description: '标签', required: false })
+  @ApiProperty({ description: '标签', required: false, type: [String] })
   @IsOptional()
-  @IsString()
-  tag?: string;
-}
+  @IsStringOrStringArray({ message: 'tagIds must be a string or array of strings' })
+  tagIds?: string | string[];
 
-export class GetMaterialByTagsDto {
-  @ApiProperty({ description: '标签', required: false })
+  @ApiProperty({ description: '群组', required: false, type: [String] })
   @IsOptional()
-  @IsArray()
-  tags?: string[];
+  @IsStringOrStringArray({ message: 'groupIds must be a string or array of strings' })
+  groupIds?: string | string[];
 }

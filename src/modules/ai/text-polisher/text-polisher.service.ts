@@ -15,7 +15,7 @@ export class TextPolisherService {
     );
   }
 
-  async polishText(inputText: string): Promise<string> {
+  async polishText(inputText: string) {
     if (inputText.length > 1000) {
       throw new BadRequestException('Input text is too long.');
     }
@@ -31,6 +31,8 @@ export class TextPolisherService {
 
     const polishedText = response.data.choices[0].text;
 
-    return polishedText;
+    return {
+      text: polishedText,
+    };
   }
 }

@@ -5,13 +5,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { Group } from '../../entity/group.entity';
 import { Tag } from '../../entity/tag.entity';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { Material } from '../../entity/material.entity';
-import { GetMaterialByTagsDto, GetMaterialDto } from './dto/get-material.dto';
+import { GetMaterialDto } from './dto/get-material.dto';
 import { User } from 'src/entity/user.entity';
 import { TokenExpiredMessage } from 'src/constant';
 
@@ -56,35 +56,58 @@ export class MaterialService {
   }
 
   async findAll(query: GetMaterialDto) {
-    const { limit, page, name, npmName, isPrivate, authorId, tag } = query;
+    const { limit, page, name, npmName, isPrivate, authorId, tagIds, groupIds } = query;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
 
-    const [materials, total] = await this.materialsRepository.findAndCount({
-      relations: {
-        tags: true,
-        user: {
-          profile: true,
-        },
-      },
-      where: {
-        name,
-        npmName,
-        isPrivate,
-        user: {
-          id: authorId,
-        },
-        tags: {
-          name: tag,
-        },
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      take,
-      skip,
-    });
-    const totalPages = Math.ceil(total / limit);
+    const queryBuilder = this.materialsRepository.createQueryBuilder('material');
+
+    queryBuilder
+      .leftJoinAndSelect('material.tags', 'tags')
+      .leftJoinAndSelect('material.user', 'user')
+      .leftJoinAndSelect('material.groups', 'groups');
+
+    if (isPrivate !== undefined) {
+      queryBuilder.andWhere('material.isPrivate = :isPrivate', { isPrivate });
+    }
+
+    if (authorId) {
+      queryBuilder.andWhere('user.id = :authorId', { authorId });
+    }
+
+    if (name) {
+      queryBuilder.andWhere('material.name LIKE :name', { name: `%${name}%` });
+    }
+
+    if (npmName) {
+      queryBuilder.andWhere('material.npmName LIKE :npmName', { npmName: `%${npmName}%` });
+    }
+
+    if (tagIds) {
+      if (Array.isArray(tagIds)) {
+        tagIds.forEach(tagId => {
+          queryBuilder.andWhere('tags.id = :tagId', { tagId });
+        });
+      } else {
+        queryBuilder.andWhere('tags.id = :tagIds', { tagIds });
+      }
+    }
+
+    if (groupIds) {
+      if (Array.isArray(groupIds)) {
+        groupIds.forEach(groupId => {
+          queryBuilder.andWhere('groups.id = :groupId', { groupId });
+        });
+      } else {
+        queryBuilder.andWhere('groups.id = :groupIds', { groupIds });
+      }
+    }
+
+    queryBuilder.orderBy('material.createdAt', 'DESC');
+
+    const [materials, total] = await queryBuilder.take(take).skip(skip).getManyAndCount();
+
+    const totalPages = Math.ceil(total / take);
     return { materials, total, totalPages };
   }
 
@@ -110,10 +133,6 @@ export class MaterialService {
       materials,
       total,
     };
-  }
-
-  findByTags(query: GetMaterialByTagsDto) {
-    const { tags } = query;
   }
 
   async findOne(id: string) {

@@ -12,7 +12,7 @@ export class TextPolisherController {
   @ApiBody({ description: '需要润色的文本', type: TextPolishDto })
   @ApiOkResponse({ description: '润色后的文本', type: String })
   @Post()
-  async textPolish(@Body('text') text: string): Promise<string> {
+  async textPolish(@Body('text') text: string) {
     return this.textPolisherService.polishText(text);
   }
 }

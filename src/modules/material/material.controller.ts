@@ -19,9 +19,8 @@ import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { CreateMaterialPipe } from './pipes/create-material.pipe';
-import { Material } from '../../entity/material.entity';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { GetMaterialByTagsDto, GetMaterialDto } from './dto/get-material.dto';
+import { GetMaterialDto } from './dto/get-material.dto';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { TokenExpiredMessage } from 'src/constant';
 
@@ -67,12 +66,6 @@ export class MaterialController {
     return this.materialService.findMySelf(req.user.userId);
   }
 
-  @Post('search/byTags')
-  @ApiOperation({ summary: '通过多个标签查询' })
-  searchByTag(@Body() query: GetMaterialByTagsDto) {
-    return this.materialService.findByTags(query);
-  }
-
   // 更新物料
   @Patch(':id')
   @ApiOperation({ summary: '更新物料' })
@@ -82,7 +75,7 @@ export class MaterialController {
     if (!req.user.userId) {
       throw new UnauthorizedException(TokenExpiredMessage);
     }
-    return this.materialService.update(id,req.user.userId, updateMaterialDto);
+    return this.materialService.update(id, req.user.userId, updateMaterialDto);
   }
 
   // 删除物料
@@ -96,5 +89,4 @@ export class MaterialController {
     }
     return this.materialService.remove(id, req.user.userId);
   }
-
 }

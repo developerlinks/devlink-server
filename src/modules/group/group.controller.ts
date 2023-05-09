@@ -3,6 +3,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -22,6 +23,7 @@ import { CreateGroupPipe } from './pipe/create-group.pipe';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { TokenExpiredMessage } from 'src/constant';
 import { QueryBaseDto } from './dto/get-group.dto';
+import { GroupMaterialDto } from './dto/group-material.dto';
 @ApiTags('分组')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(new TypeormFilter())
@@ -58,12 +60,34 @@ export class GroupController {
   @ApiOperation({ summary: '查询分组下的物料' })
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  getMaterialsByGroupId(@Param('groupId') groupId: string, @Query() query: QueryBaseDto, @Req() req) {
+  getMaterialsByGroupId(
+    @Param('groupId') groupId: string,
+    @Query() query: QueryBaseDto,
+    @Req() req,
+  ) {
     if (!req.user.userId) {
       throw new UnauthorizedException(TokenExpiredMessage);
     }
-    const userId = req.user.userId;
-
     return this.groupService.getMaterialsByGroupId(groupId, query);
+  }
+
+  @Post(':groupId/material/:materialId')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  async addMaterialToGroup(@Param() dto: GroupMaterialDto, @Req() req) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException(TokenExpiredMessage);
+    }
+    return await this.groupService.addMaterialToGroup(dto);
+  }
+
+  @Delete(':groupId/material/:materialId')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  async removeMaterialFromGroup(@Param() dto: GroupMaterialDto, @Req() req) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException(TokenExpiredMessage);
+    }
+    return await this.groupService.removeMaterialFromGroup(dto);
   }
 }

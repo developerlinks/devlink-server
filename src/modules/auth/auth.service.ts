@@ -100,7 +100,6 @@ export class AuthService {
       device.refreshTokenExpiresAt = Number(
         new Date(Date.now() + jwtRefreshExpirationInSeconds * 1000),
       );
-      console.info('device', device);
       await this.deviceRepository.save(device);
     }
   }

@@ -9,7 +9,6 @@ import {
   LoggerService,
   Inject,
   Query,
-  ParseIntPipe,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -26,7 +25,7 @@ import { getUserDto } from './dto/get-user.dto';
 import { CreateUserPipe } from './pipes/create-user.pipe';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { TokenExpiredMessage } from 'src/constant';
 import { FuzzyQueryDto } from './dto/fuzzy-query.dto';
@@ -80,10 +79,7 @@ export class UserController {
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
   @Patch('update')
-  async updateUser(
-    @Body() updateUserDto: UpdateUserDto,
-    @Req() req,
-  ): Promise<User> {
+  async updateUser(@Body() updateUserDto: UpdateUserDto, @Req() req): Promise<User> {
     if (!req.user.userId) {
       throw new UnauthorizedException(TokenExpiredMessage);
     }
@@ -112,7 +108,6 @@ export class UserController {
   @ApiOperation({ summary: '模糊查询' })
   @Get('fuzzy_query')
   fuzzyQuery(@Query() dto: FuzzyQueryDto) {
-
     return this.userService.fuzzyQuery(dto);
   }
 }

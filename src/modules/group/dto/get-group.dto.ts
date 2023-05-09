@@ -12,7 +12,6 @@ export class QueryBaseDto {
 }
 
 export class GetGroupDto extends QueryBaseDto {
-
   @ApiProperty({ description: '名字', required: false })
   @IsOptional()
   @IsString()

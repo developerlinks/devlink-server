@@ -24,7 +24,7 @@ export class Group {
   name: string;
 
   @Expose()
-  @Column()
+  @Column({ nullable: true, type: 'longtext' })
   description: string;
 
   @Expose()

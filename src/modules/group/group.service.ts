@@ -5,6 +5,7 @@ import { Group } from '../../entity/group.entity';
 import { User } from 'src/entity/user.entity';
 import { QueryBaseDto } from './dto/get-group.dto';
 import { Material } from 'src/entity/material.entity';
+import { GroupMaterialDto } from './dto/group-material.dto';
 
 @Injectable()
 export class GroupService {
@@ -55,9 +56,9 @@ export class GroupService {
     const skip = ((page || 1) - 1) * take;
     const [materials, total] = await this.materialRepository.findAndCount({
       where: {
-        groups:{
+        groups: {
           id: groupId,
-        }
+        },
       },
       take,
       skip,
@@ -71,6 +72,59 @@ export class GroupService {
       materials: materials,
       total,
       totalPages,
+    };
+  }
+
+  async addMaterialToGroup(dto: GroupMaterialDto) {
+    const { groupId, materialId } = dto;
+    const group = await this.groupRepository.findOne({
+      where: {
+        id: groupId,
+      },
+    });
+    const material = await this.materialRepository.findOne({
+      where: {
+        id: materialId,
+      },
+      relations: ['groups'],
+    });
+
+    if (!group || !material) {
+      throw new NotFoundException('找不到分组或物料');
+    }
+
+    material.groups.push(group);
+    await this.materialRepository.save(material);
+
+    return {
+      material,
+    };
+  }
+
+  async removeMaterialFromGroup(dto: GroupMaterialDto) {
+    const { groupId, materialId } = dto;
+    const group = await this.groupRepository.findOne({
+      where: {
+        id: groupId,
+      },
+    });
+
+    const material = await this.materialRepository.findOne({
+      where: {
+        id: materialId,
+      },
+      relations: ['groups'],
+    });
+
+    if (!group || !material) {
+      throw new NotFoundException('找不到分组或物料');
+    }
+
+    material.groups = material.groups.filter(group => group.id !== groupId);
+    await this.materialRepository.save(material);
+
+    return {
+      material,
     };
   }
 }
