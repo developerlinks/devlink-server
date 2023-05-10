@@ -76,6 +76,7 @@ export class MaterialService {
     queryBuilder
       .leftJoinAndSelect('material.tags', 'tags')
       .leftJoinAndSelect('material.user', 'user')
+      .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('material.groups', 'groups')
       .leftJoinAndSelect('material.collectedInGroups', 'collectedInGroups');
 
