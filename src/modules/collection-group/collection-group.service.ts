@@ -12,6 +12,7 @@ import { GetMaterialInGroupDto, GetMyCollectionGroupDto } from './dto/get-collec
 import { CollectionGroup } from 'src/entity/collectionGroup.entity';
 import { Material } from 'src/entity/material.entity';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
+import { CollectionGroupMaterialDto } from './dto/collection-group-material.dto';
 
 @Injectable()
 export class CollectionGroupService {
@@ -38,7 +39,7 @@ export class CollectionGroupService {
     const { limit, page } = query;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
-    const [collectionGroups, total] = await this.collectionGroupRepository.findAndCount({
+    const [groups, total] = await this.collectionGroupRepository.findAndCount({
       where: {
         user: {
           id,
@@ -50,13 +51,15 @@ export class CollectionGroupService {
     const totalPages = Math.ceil(total / limit);
 
     return {
-      collectionGroups,
+      groups,
       total,
       totalPages,
     };
   }
 
-  async addMaterialToGroup(collectionGroupId: string, userId: string, materialId: string) {
+  async addMaterialToGroup(dto: CollectionGroupMaterialDto) {
+    const { collectionGroupId, materialId } = dto;
+
     const collectionGroup = await this.collectionGroupRepository.findOne({
       where: {
         id: collectionGroupId,
@@ -68,11 +71,10 @@ export class CollectionGroupService {
       throw new NotFoundException('收藏分组未找到');
     }
 
-    if (collectionGroup.user.id !== userId) {
-      return new ForbiddenException('没有权限');
-    }
-
-    const material = await this.materialRepository.findOne({ where: { id: materialId } });
+    const material = await this.materialRepository.findOne({
+      where: { id: materialId },
+      relations: ['collectedInGroups'],
+    });
 
     if (!material) {
       throw new NotFoundException('物料未找到');
@@ -87,43 +89,57 @@ export class CollectionGroupService {
       throw new BadRequestException('物料已经在收藏分组中');
     }
     // 将物料添加到收藏分组
-    collectionGroup.collectedMaterials.push(material);
-    console.info('collectionGroup', collectionGroup);
-
+    material.collectedInGroups.push(collectionGroup);
     await this.materialRepository.save(material);
-    await this.collectionGroupRepository.save(collectionGroup);
-    return collectionGroup;
+    return {
+      material,
+    };
   }
 
-  // 查询该收藏分组下的物料
-  async getMaterialInGroup(id: string, query: GetMaterialInGroupDto) {
-    const { limit, page } = query;
-    const take = limit || 10;
-    const skip = ((page || 1) - 1) * take;
-    const [materials, total] = await this.materialRepository.findAndCount({
+  async removeMaterialFromGroup(dto: CollectionGroupMaterialDto) {
+    const { collectionGroupId, materialId } = dto;
+    const collectionGroup = await this.collectionGroupRepository.findOne({
       where: {
-        collectedInGroups:{
-          id: id
-        }
+        id: collectionGroupId,
       },
-      take,
-      skip,
+      relations: ['collectedMaterials'],
     });
 
-    if (materials.length === 0) {
-      return new NotFoundException('不存在');
+    if (!collectionGroup) {
+      throw new NotFoundException('收藏分组未找到');
     }
-    
-    const totalPages = Math.ceil(total / limit);
+
+    const material = await this.materialRepository.findOne({
+      where: { id: materialId },
+      relations: ['collectedInGroups'],
+    });
+
+    if (!material) {
+      throw new NotFoundException('物料未找到');
+    }
+
+    // 检查物料是否在收藏分组中
+    const isMaterialAlreadyInGroup = collectionGroup.collectedMaterials.some(
+      collectedMaterial => collectedMaterial.id === materialId,
+    );
+
+    if (!isMaterialAlreadyInGroup) {
+      throw new BadRequestException('物料不在收藏分组中');
+    }
+
+    material.collectedInGroups = material.collectedInGroups.filter(
+      group => group.id !== collectionGroupId,
+    );
+
+    await this.materialRepository.save(material);
+
     return {
-      materials,
-      total,
-      totalPages,
+      material,
     };
   }
 
   // 删除分组
-  async deleteGroup(id: string, userId: string) {
+  async deleteGroup(id: string) {
     const group = await this.collectionGroupRepository.findOne({
       where: {
         id,
@@ -134,10 +150,6 @@ export class CollectionGroupService {
     if (!group) {
       return new NotFoundException('分组不存在');
     }
-    if (group.user.id !== userId) {
-      return new ForbiddenException('没有权限');
-    }
-
     return this.collectionGroupRepository.remove(group);
   }
 }

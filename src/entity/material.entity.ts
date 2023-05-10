@@ -96,5 +96,6 @@ export class Material {
 
   @Expose()
   @ManyToMany(() => CollectionGroup, collectionGroup => collectionGroup.collectedMaterials)
+  @JoinTable({ name: 'material_collection_group' })
   collectedInGroups: CollectionGroup[];
 }

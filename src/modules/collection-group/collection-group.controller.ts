@@ -24,6 +24,7 @@ import { GetMaterialInGroupDto, GetMyCollectionGroupDto } from './dto/get-collec
 import { CreateCollectionGroupPipe } from './pipe/create-collection-group.pipe';
 import { AddMaterialIncollectionGroup } from './dto/add-material-in-collection-group.dto';
 import { TokenExpiredMessage } from 'src/constant';
+import { CollectionGroupMaterialDto } from './dto/collection-group-material.dto';
 @ApiTags('收藏分组')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(new TypeormFilter())
@@ -55,28 +56,24 @@ export class CollectionGroupController {
     return this.collectionGroupService.getGroup(userId, query);
   }
 
-  // 将物料添加到收藏分组
-  @Post(':id/material')
-  @ApiOperation({ summary: '将物料添加到收藏分组' })
+  @Post(':collectionGroupId/material/:materialId')
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  addMaterialToGroup(@Param('id') id: string, @Body() body: AddMaterialIncollectionGroup, @Req() req) {
+  async addMaterialToGroup(@Param() dto: CollectionGroupMaterialDto, @Req() req) {
     if (!req.user.userId) {
       throw new UnauthorizedException(TokenExpiredMessage);
     }
-    const userId = req.user.userId;
-    return this.collectionGroupService.addMaterialToGroup(id, userId, body.materialId);
+    return await this.collectionGroupService.addMaterialToGroup(dto);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: '查询该收藏分组下的物料' })
+  @Delete(':collectionGroupId/material/:materialId')
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  getMaterial(@Param('id') id: string, @Query() query: GetMaterialInGroupDto, @Req() req) {
+  async removeMaterialFromGroup(@Param() dto: CollectionGroupMaterialDto, @Req() req) {
     if (!req.user.userId) {
       throw new UnauthorizedException(TokenExpiredMessage);
     }
-    return this.collectionGroupService.getMaterialInGroup(id, query);
+    return await this.collectionGroupService.removeMaterialFromGroup(dto);
   }
 
   @Delete(':id')
@@ -87,7 +84,6 @@ export class CollectionGroupController {
     if (!req.user.userId) {
       throw new UnauthorizedException(TokenExpiredMessage);
     }
-    const userId = req.user.userId;
-    return this.collectionGroupService.deleteGroup(id, userId);
+    return this.collectionGroupService.deleteGroup(id);
   }
 }

@@ -14,6 +14,7 @@ import { Material } from '../../entity/material.entity';
 import { GetMaterialDto } from './dto/get-material.dto';
 import { User } from 'src/entity/user.entity';
 import { TokenExpiredMessage } from 'src/constant';
+import { ensureArray } from 'src/utils';
 
 @Injectable()
 export class MaterialService {
@@ -56,7 +57,17 @@ export class MaterialService {
   }
 
   async findAll(query: GetMaterialDto) {
-    const { limit, page, name, npmName, isPrivate, authorId, tagIds, groupIds } = query;
+    const {
+      limit,
+      page,
+      name,
+      npmName,
+      isPrivate,
+      authorId,
+      tagIds,
+      groupIds,
+      collectionGroupIds,
+    } = query;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
 
@@ -65,7 +76,14 @@ export class MaterialService {
     queryBuilder
       .leftJoinAndSelect('material.tags', 'tags')
       .leftJoinAndSelect('material.user', 'user')
-      .leftJoinAndSelect('material.groups', 'groups');
+      .leftJoinAndSelect('material.groups', 'groups')
+      .leftJoinAndSelect('material.collectedInGroups', 'collectedInGroups');
+
+    const tagIdsArray = tagIds ? ensureArray(tagIds) : undefined;
+    const groupIdsArray = groupIds ? ensureArray(groupIds) : undefined;
+    const collectionGroupIdsArray = collectionGroupIds
+      ? ensureArray(collectionGroupIds)
+      : undefined;
 
     if (isPrivate !== undefined) {
       queryBuilder.andWhere('material.isPrivate = :isPrivate', { isPrivate });
@@ -83,8 +101,8 @@ export class MaterialService {
       queryBuilder.andWhere('material.npmName LIKE :npmName', { npmName: `%${npmName}%` });
     }
 
-    if (tagIds && Array.isArray(tagIds)) {
-      tagIds.forEach((tagId, index) => {
+    if (tagIdsArray) {
+      tagIdsArray.forEach((tagId, index) => {
         queryBuilder.andWhere(
           `material.id IN (
           SELECT materialId
@@ -96,8 +114,8 @@ export class MaterialService {
       });
     }
 
-    if (groupIds && Array.isArray(groupIds)) {
-      groupIds.forEach((groupId, index) => {
+    if (groupIdsArray) {
+      groupIdsArray.forEach((groupId, index) => {
         queryBuilder.andWhere(
           `material.id IN (
           SELECT materialId
@@ -105,6 +123,19 @@ export class MaterialService {
           WHERE groupId = :groupId${index}
         )`,
           { [`groupId${index}`]: groupId },
+        );
+      });
+    }
+
+    if (collectionGroupIdsArray) {
+      collectionGroupIdsArray.forEach((collectionGroupId, index) => {
+        queryBuilder.andWhere(
+          `material.id IN (
+          SELECT materialId
+          FROM material_collection_group
+          WHERE collectionGroupId = :collectionGroupId${index}
+        )`,
+          { [`collectionGroupId${index}`]: collectionGroupId },
         );
       });
     }

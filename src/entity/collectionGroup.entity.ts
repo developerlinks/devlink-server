@@ -19,7 +19,7 @@ export class CollectionGroup {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true, type: 'longtext' })
   description: string;
 
   @CreateDateColumn()
@@ -31,9 +31,6 @@ export class CollectionGroup {
   user: User;
 
   @ManyToMany(() => Material, material => material.collectedInGroups)
-  @JoinTable({
-    name: 'collection_group_material',
-  })
   collectedMaterials: Material[];
 
   constructor(partial?: Partial<CollectionGroup>) {

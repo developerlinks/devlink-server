@@ -66,11 +66,16 @@ export class GetMaterialDto {
 
   @ApiProperty({ description: '标签', required: false, type: [String] })
   @IsOptional()
-  @IsStringOrStringArray({ message: 'tagIds must be a string or array of strings' })
+  @IsStringOrStringArray({ message: 'tagIds 必须是字符串或字符串数组' })
   tagIds?: string | string[];
 
   @ApiProperty({ description: '群组', required: false, type: [String] })
   @IsOptional()
-  @IsStringOrStringArray({ message: 'groupIds must be a string or array of strings' })
+  @IsStringOrStringArray({ message: 'groupIds 必须是字符串或字符串数组' })
   groupIds?: string | string[];
+
+  @ApiProperty({ description: '收藏分组', required: false, type: [String] })
+  @IsOptional()
+  @IsStringOrStringArray({ message: 'collectionGroupIds 必须是字符串或字符串数组' })
+  collectionGroupIds?: string | string[];
 }
