@@ -83,24 +83,30 @@ export class MaterialService {
       queryBuilder.andWhere('material.npmName LIKE :npmName', { npmName: `%${npmName}%` });
     }
 
-    if (tagIds) {
-      if (Array.isArray(tagIds)) {
-        tagIds.forEach(tagId => {
-          queryBuilder.andWhere('tags.id = :tagId', { tagId });
-        });
-      } else {
-        queryBuilder.andWhere('tags.id = :tagIds', { tagIds });
-      }
+    if (tagIds && Array.isArray(tagIds)) {
+      tagIds.forEach((tagId, index) => {
+        queryBuilder.andWhere(
+          `material.id IN (
+          SELECT materialId
+          FROM material_tag
+          WHERE tagId = :tagId${index}
+        )`,
+          { [`tagId${index}`]: tagId },
+        );
+      });
     }
 
-    if (groupIds) {
-      if (Array.isArray(groupIds)) {
-        groupIds.forEach(groupId => {
-          queryBuilder.andWhere('groups.id = :groupId', { groupId });
-        });
-      } else {
-        queryBuilder.andWhere('groups.id = :groupIds', { groupIds });
-      }
+    if (groupIds && Array.isArray(groupIds)) {
+      groupIds.forEach((groupId, index) => {
+        queryBuilder.andWhere(
+          `material.id IN (
+          SELECT materialId
+          FROM material_group
+          WHERE groupId = :groupId${index}
+        )`,
+          { [`groupId${index}`]: groupId },
+        );
+      });
     }
 
     queryBuilder.orderBy('material.createdAt', 'DESC');
