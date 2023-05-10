@@ -13,7 +13,6 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { Device } from './device.entity';
 
-
 export enum Gender {
   MALE = 'male',
   FEMALE = 'female',
