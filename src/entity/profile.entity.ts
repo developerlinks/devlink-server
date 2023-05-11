@@ -53,5 +53,6 @@ export class Profile {
     this.gender = profile?.gender ?? Gender.OTHER;
     this.address = profile?.address ?? '';
     this.description = profile?.description ?? '';
+    Object.assign(this, profile);
   }
 }

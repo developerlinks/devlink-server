@@ -35,8 +35,6 @@ export class CollectionGroup {
   collectedMaterials: Material[];
 
   constructor(partial?: Partial<CollectionGroup>) {
-    this.name = '';
-    this.description = '';
     Object.assign(this, partial);
   }
 }

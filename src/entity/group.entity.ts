@@ -40,8 +40,6 @@ export class Group {
   materials: Material[];
 
   constructor(partial?: Partial<Group>) {
-    this.name = '';
-    this.description = '';
     Object.assign(this, partial);
   }
 }

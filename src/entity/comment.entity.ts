@@ -16,14 +16,20 @@ export class Comment {
   @PrimaryColumn('uuid')
   id: string = uuidv4();
 
-  @Column()
+  @Column({ type: 'longtext' })
   content: string;
+
+  @Column({ nullable: true })
+  emoticon: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
+  @CreateDateColumn()
+  updateAt: Date;
+
   @ManyToOne(() => Material, material => material.comments)
-  materials: Material;
+  material: Material;
 
   @ManyToOne(() => Comment, comment => comment.children)
   parent: Comment;
@@ -33,4 +39,8 @@ export class Comment {
 
   @ManyToOne(() => User, user => user.comments)
   user: User;
+
+  constructor(partial?: Partial<Comment>) {
+    Object.assign(this, partial);
+  }
 }

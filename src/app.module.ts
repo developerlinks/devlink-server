@@ -19,6 +19,7 @@ import { StatusModule } from './modules/status/status.module';
 import { OssModule } from './modules/oss/oss.module';
 import { LikeModule } from './modules/like/like.module';
 import { FollowModule } from './modules/follow/follow.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 const schema = Joi.object({
@@ -92,6 +93,7 @@ const schema = Joi.object({
     OssModule,
     LikeModule,
     FollowModule,
+    CommentModule,
   ],
   controllers: [],
   providers: [Logger],

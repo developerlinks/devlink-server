@@ -205,6 +205,10 @@ export class MaterialService {
         collectedInGroups: {
           user: true,
         },
+        comments: {
+          parent: true,
+          children: true,
+        },
       },
     });
     if (!material) {
@@ -212,10 +216,6 @@ export class MaterialService {
     }
     return material;
   }
-
-  // update Material
-  // async update(id: string, updateMaterialDto: UpdateMaterialDto) {
-  //   const { tagIds, groupIds, ...rest } = updateMaterialDto;
 
   async remove(id: string, userId: string) {
     const material = await this.materialsRepository.findOne({

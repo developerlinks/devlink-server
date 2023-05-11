@@ -23,7 +23,7 @@ export class Device {
   @Column()
   @Expose()
   deviceType: string;
-  
+
   @Column()
   @Expose()
   clientIp: string;
@@ -39,6 +39,6 @@ export class Device {
   @Exclude()
   refreshTokenExpiresAt: number;
 
-  @ManyToOne(() => User, (user) => user.devices, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, user => user.devices, { onDelete: 'CASCADE' })
   user: User;
 }

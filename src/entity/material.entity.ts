@@ -87,7 +87,7 @@ export class Material {
   groups: Group[];
 
   @Expose()
-  @OneToMany(() => Comment, comment => comment.materials)
+  @OneToMany(() => Comment, comment => comment.material)
   comments: Comment[];
 
   @Expose()

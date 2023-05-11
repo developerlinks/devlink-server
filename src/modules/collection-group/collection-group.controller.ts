@@ -20,9 +20,8 @@ import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { CreateColletcionGroupDto } from './dto/create-collection-group.dto';
-import { GetMaterialInGroupDto, GetMyCollectionGroupDto } from './dto/get-collection-group.dto';
+import { GetMyCollectionGroupDto } from './dto/get-collection-group.dto';
 import { CreateCollectionGroupPipe } from './pipe/create-collection-group.pipe';
-import { AddMaterialIncollectionGroup } from './dto/add-material-in-collection-group.dto';
 import { TokenExpiredMessage } from 'src/constant';
 import { CollectionGroupMaterialDto } from './dto/collection-group-material.dto';
 @ApiTags('收藏分组')
