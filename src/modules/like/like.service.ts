@@ -99,4 +99,23 @@ export class LikeService {
       materials: likes,
     };
   }
+
+  async getMaterialLikes(userId: string) {
+    const materials = await this.materialRepository.find({
+      where: {
+        likes: {
+          user: {
+            id: userId,
+          },
+        },
+      },
+      relations: {
+        likes: {
+          user: true,
+        },
+      },
+    });
+
+    return { data: materials };
+  }
 }

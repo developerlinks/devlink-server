@@ -18,7 +18,7 @@ import { JwtGuard } from 'src/guards/jwt.guard';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { TokenExpiredMessage } from 'src/constant';
 
-@ApiTags('like')
+@ApiTags('物料点赞相关')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(new TypeormFilter())
 @Controller('like')
@@ -50,18 +50,20 @@ export class LikeController {
   }
 
   @ApiOperation({ summary: '查询物料的点赞' })
-  @UseGuards(JwtGuard)
-  @ApiBearerAuth()
   @Get('/material/:materialId')
   async getLikesOfMaterial(@Param('materialId') materialId: string) {
     return await this.likeService.getLikesOfMaterial(materialId);
   }
 
   @ApiOperation({ summary: '查询用户点赞的物料列表' })
-  @UseGuards(JwtGuard)
-  @ApiBearerAuth()
   @Get('/user/:userId')
   async getLikesOfUser(@Param('userId') userId: string) {
     return await this.likeService.getLikesOfUser(userId);
+  }
+
+  @ApiOperation({ summary: '查询用户的物料获赞信息' })
+  @Get('/materials/:userId')
+  async getMaterialLikes(@Param('userId') userId: string) {
+    return await this.likeService.getMaterialLikes(userId);
   }
 }
