@@ -50,6 +50,7 @@ export class MaterialController {
   }
 
   @Get()
+  @UseGuards(JwtGuard)
   @ApiOperation({ summary: '查询所有的物料' })
   search(@Query() query: GetMaterialDto) {
     return this.materialService.findAll(query);

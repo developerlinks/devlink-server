@@ -19,7 +19,7 @@ export class TextPolisherService {
     if (inputText.length > 1000) {
       throw new BadRequestException('Input text is too long.');
     }
-    const prompt = `Please polish the following text: "${inputText}", And reply in the corresponding language.`;
+    const prompt = `请润色下面的文字: "${inputText}"`;
     const response = await this.openAiIns.createCompletion({
       model: 'text-davinci-003',
       prompt: prompt,

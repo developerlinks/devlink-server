@@ -91,7 +91,7 @@ export class Material {
   comments: Comment[];
 
   @Expose()
-  @OneToMany(() => Like, like => like.materials)
+  @OneToMany(() => Like, like => like.material)
   likes: Like[];
 
   @Expose()

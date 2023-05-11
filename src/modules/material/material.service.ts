@@ -67,6 +67,7 @@ export class MaterialService {
       tagIds,
       groupIds,
       collectionGroupIds,
+      collectorId,
     } = query;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
@@ -78,7 +79,8 @@ export class MaterialService {
       .leftJoinAndSelect('material.user', 'user')
       .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('material.groups', 'groups')
-      .leftJoinAndSelect('material.collectedInGroups', 'collectedInGroups');
+      .leftJoinAndSelect('material.collectedInGroups', 'collectedInGroups')
+      .leftJoinAndSelect('collectedInGroups.user', 'collectionUser');
 
     const tagIdsArray = tagIds ? ensureArray(tagIds) : undefined;
     const groupIdsArray = groupIds ? ensureArray(groupIds) : undefined;
@@ -86,7 +88,19 @@ export class MaterialService {
       ? ensureArray(collectionGroupIds)
       : undefined;
 
-    if (isPrivate !== undefined) {
+    if (collectorId) {
+      queryBuilder.andWhere('collectionUser.id = :collectorId', { collectorId });
+    }
+
+    if (collectionGroupIdsArray) {
+      collectionGroupIdsArray.forEach((collectionGroupId, index) => {
+        queryBuilder.andWhere('collectedInGroups.id = :collectionGroupId' + index, {
+          [`collectionGroupId${index}`]: collectionGroupId,
+        });
+      });
+    }
+
+    if (isPrivate) {
       queryBuilder.andWhere('material.isPrivate = :isPrivate', { isPrivate });
     }
 
@@ -188,6 +202,9 @@ export class MaterialService {
         },
         tags: true,
         groups: true,
+        collectedInGroups: {
+          user: true,
+        },
       },
     });
     if (!material) {

@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '../../entity/user.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Roles, RolesEnum } from 'src/entity/roles.entity';
 import * as argon2 from 'argon2';
 import { getUserDto } from './dto/get-user.dto';

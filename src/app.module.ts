@@ -17,6 +17,7 @@ import { CollectionGroupModule } from './modules/collection-group/collection-gro
 import { TextPolisherModule } from './modules/ai/text-polisher/text-polisher.module';
 import { StatusModule } from './modules/status/status.module';
 import { OssModule } from './modules/oss/oss.module';
+import { LikeModule } from './modules/like/like.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 const schema = Joi.object({
@@ -88,6 +89,7 @@ const schema = Joi.object({
     CollectionGroupModule,
     StatusModule,
     OssModule,
+    LikeModule,
   ],
   controllers: [],
   providers: [Logger],

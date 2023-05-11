@@ -59,6 +59,11 @@ export class GetMaterialDto {
   @IsString()
   authorId?: string;
 
+  @ApiProperty({ description: '收藏者Id', required: false })
+  @IsOptional()
+  @IsString()
+  collectorId?: string;
+
   @ApiProperty({ description: '是否公开', required: false })
   @IsOptional()
   @IsBoolean()

@@ -1,11 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  PrimaryColumn,
-  CreateDateColumn,
-} from 'typeorm';
+import { Entity, ManyToOne, PrimaryColumn, CreateDateColumn } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Material } from './material.entity';
 import { User } from './user.entity';
@@ -19,7 +12,7 @@ export class Like {
   user: User;
 
   @ManyToOne(() => Material, material => material.likes)
-  materials: Material;
+  material: Material; // 修改此处
 
   @CreateDateColumn()
   likeDate: Date;
