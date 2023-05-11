@@ -76,10 +76,10 @@ export class User {
   @OneToMany(() => Like, like => like.user, { cascade: true })
   likes: Like[];
 
-  @OneToMany(() => Follow, follow => follow.follower, { cascade: true })
+  @OneToMany(() => Follow, follow => follow.following)
   followers: Follow[];
 
-  @OneToMany(() => Follow, follow => follow.following, { cascade: true })
+  @OneToMany(() => Follow, follow => follow.follower)
   following: Follow[];
 
   @OneToMany(() => Tag, tag => tag.user, { cascade: true })
@@ -88,10 +88,7 @@ export class User {
   @OneToMany(() => Comment, comment => comment.user, { cascade: true })
   comments: Comment[];
 
-  @OneToMany(() => CollectionGroup, collectionGroup => collectionGroup.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => CollectionGroup, collectionGroup => collectionGroup.user)
   collectedInGroups: CollectionGroup[];
 
   @OneToMany(() => Device, device => device.user, { cascade: true })

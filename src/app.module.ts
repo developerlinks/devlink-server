@@ -18,6 +18,7 @@ import { TextPolisherModule } from './modules/ai/text-polisher/text-polisher.mod
 import { StatusModule } from './modules/status/status.module';
 import { OssModule } from './modules/oss/oss.module';
 import { LikeModule } from './modules/like/like.module';
+import { FollowModule } from './modules/follow/follow.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 const schema = Joi.object({
@@ -90,6 +91,7 @@ const schema = Joi.object({
     StatusModule,
     OssModule,
     LikeModule,
+    FollowModule,
   ],
   controllers: [],
   providers: [Logger],

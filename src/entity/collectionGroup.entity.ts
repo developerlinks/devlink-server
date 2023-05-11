@@ -27,6 +27,7 @@ export class CollectionGroup {
 
   @ManyToOne(() => User, user => user.collectedInGroups, {
     onDelete: 'CASCADE',
+    cascade: true,
   })
   user: User;
 
