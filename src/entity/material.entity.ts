@@ -73,7 +73,7 @@ export class Material {
   updatedAt: Date;
 
   @Expose()
-  @ManyToOne(() => User, user => user.materials, { cascade: true, onDelete: 'SET NULL' })
+  @ManyToOne(() => User, user => user.materials)
   user: User;
 
   @ManyToMany(() => Tag, tag => tag.material)
@@ -83,7 +83,6 @@ export class Material {
 
   @Expose()
   @ManyToMany(() => Group, group => group.materials)
-  @JoinTable({ name: 'material_group' })
   groups: Group[];
 
   @Expose()

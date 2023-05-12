@@ -67,10 +67,10 @@ export class User {
   @OneToOne(() => Profile, profile => profile.user, { cascade: true })
   profile: Profile;
 
-  @OneToMany(() => Group, group => group.user, { cascade: true, onDelete: 'CASCADE' })
+  @OneToMany(() => Group, group => group.user, { cascade: true, onDelete: 'SET NULL' })
   group: Group[];
 
-  @OneToMany(() => Material, material => material.user)
+  @OneToMany(() => Material, material => material.user, { cascade: true, onDelete: 'SET NULL' })
   materials: Material[];
 
   @OneToMany(() => Like, like => like.user, { cascade: true })
@@ -85,10 +85,13 @@ export class User {
   @OneToMany(() => Tag, tag => tag.user, { cascade: true })
   tags: Tag[];
 
-  @OneToMany(() => Comment, comment => comment.user, { cascade: true })
+  @OneToMany(() => Comment, comment => comment.user, { cascade: true, onDelete: 'SET NULL' })
   comments: Comment[];
 
-  @OneToMany(() => CollectionGroup, collectionGroup => collectionGroup.user)
+  @OneToMany(() => CollectionGroup, collectionGroup => collectionGroup.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   collectedInGroups: CollectionGroup[];
 
   @OneToMany(() => Device, device => device.user, { cascade: true })

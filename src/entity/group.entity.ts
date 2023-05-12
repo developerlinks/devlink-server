@@ -36,7 +36,8 @@ export class Group {
   })
   user: User;
 
-  @ManyToMany(() => Material, material => material.groups)
+  @ManyToMany(() => Material, material => material.groups, { onDelete: 'CASCADE' })
+  @JoinTable({ name: 'material_group' })
   materials: Material[];
 
   constructor(partial?: Partial<Group>) {

@@ -25,10 +25,7 @@ export class CollectionGroup {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => User, user => user.collectedInGroups, {
-    onDelete: 'CASCADE',
-    cascade: true,
-  })
+  @ManyToOne(() => User, user => user.collectedInGroups, { onDelete: 'CASCADE' })
   user: User;
 
   @ManyToMany(() => Material, material => material.collectedInGroups)
