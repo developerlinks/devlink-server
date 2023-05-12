@@ -20,7 +20,7 @@ import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { CreateColletcionGroupDto } from './dto/create-collection-group.dto';
-import { GetMyCollectionGroupDto } from './dto/get-collection-group.dto';
+import { GetMaterialInGroupDto, GetMyCollectionGroupDto } from './dto/get-collection-group.dto';
 import { CreateCollectionGroupPipe } from './pipe/create-collection-group.pipe';
 import { TokenExpiredMessage } from 'src/constant';
 import { CollectionGroupMaterialDto } from './dto/collection-group-material.dto';
@@ -84,5 +84,16 @@ export class CollectionGroupController {
       throw new UnauthorizedException(TokenExpiredMessage);
     }
     return this.collectionGroupService.deleteGroup(id);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: '查询该收藏分组下的物料' })
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  getMaterial(@Param('id') id: string, @Query() query: GetMaterialInGroupDto, @Req() req) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException(TokenExpiredMessage);
+    }
+    return this.collectionGroupService.getMaterialInGroup(id, query);
   }
 }

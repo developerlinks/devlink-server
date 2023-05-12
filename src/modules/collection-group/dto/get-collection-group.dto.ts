@@ -12,7 +12,6 @@ export class GetMyCollectionGroupDto {
 }
 
 export class GetCollectionGroupDto extends GetMyCollectionGroupDto {
-
   @ApiProperty({ description: '名字', required: false })
   @IsOptional()
   @IsString()
@@ -25,7 +24,6 @@ export class GetCollectionGroupDto extends GetMyCollectionGroupDto {
 }
 
 export class GetMaterialInGroupDto extends GetMyCollectionGroupDto {
-
   @ApiProperty({ description: '分组id', required: false })
   @IsString()
   @IsOptional()

@@ -57,6 +57,33 @@ export class CollectionGroupService {
     };
   }
 
+  // 查询该收藏分组下的物料
+  async getMaterialInGroup(id: string, query: GetMaterialInGroupDto) {
+    const { limit, page } = query;
+    const take = limit || 10;
+    const skip = ((page || 1) - 1) * take;
+    const [materials, total] = await this.materialRepository.findAndCount({
+      where: {
+        collectedInGroups: {
+          id: id,
+        },
+      },
+      take,
+      skip,
+    });
+
+    if (materials.length === 0) {
+      return new NotFoundException('不存在');
+    }
+
+    const totalPages = Math.ceil(total / limit);
+    return {
+      materials,
+      total,
+      totalPages,
+    };
+  }
+
   async addMaterialToGroup(dto: CollectionGroupMaterialDto) {
     const { collectionGroupId, materialId } = dto;
 

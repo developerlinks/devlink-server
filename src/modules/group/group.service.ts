@@ -49,6 +49,32 @@ export class GroupService {
     };
   }
 
+  // 查询该分组下的物料
+  async getMaterialsByGroupId(groupId: string, query: QueryBaseDto) {
+    const { limit, page } = query;
+    const take = limit || 10;
+    const skip = ((page || 1) - 1) * take;
+    const [materials, total] = await this.materialRepository.findAndCount({
+      where: {
+        groups: {
+          id: groupId,
+        },
+      },
+      take,
+      skip,
+    });
+    if (materials.length === 0) {
+      return new NotFoundException('不存在');
+    }
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      materials: materials,
+      total,
+      totalPages,
+    };
+  }
+
   async addMaterialToGroup(dto: GroupMaterialDto) {
     const { groupId, materialId } = dto;
     const group = await this.groupRepository.findOne({

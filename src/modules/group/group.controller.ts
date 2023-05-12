@@ -55,6 +55,22 @@ export class GroupController {
     return this.groupService.getGroup(userId, query);
   }
 
+  // 查询该分组下的物料
+  @Get(':groupId/materials')
+  @ApiOperation({ summary: '查询分组下的物料' })
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  getMaterialsByGroupId(
+    @Param('groupId') groupId: string,
+    @Query() query: QueryBaseDto,
+    @Req() req,
+  ) {
+    if (!req.user.userId) {
+      throw new UnauthorizedException(TokenExpiredMessage);
+    }
+    return this.groupService.getMaterialsByGroupId(groupId, query);
+  }
+
   @Post(':groupId/material/:materialId')
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
