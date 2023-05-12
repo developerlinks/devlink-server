@@ -276,6 +276,8 @@ export class UserService {
         query.leftJoinAndSelect(`${entity}.user`, 'user');
         query.leftJoinAndSelect(`user.profile`, 'profile');
         query.leftJoinAndSelect(`${entity}.tags`, 'tags');
+        query.leftJoinAndSelect(`${entity}.collectedInGroups`, 'collectedInGroups');
+        query.leftJoinAndSelect(`${entity}.groups`, 'groups');
       }
 
       return query.getManyAndCount();

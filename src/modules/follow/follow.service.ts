@@ -48,6 +48,8 @@ export class FollowService {
       },
     });
 
+    console.log('follow', follow, followerId, followingId);
+
     if (!follow) {
       throw new NotFoundException('用户不存在');
     }

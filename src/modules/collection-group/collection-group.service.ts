@@ -39,7 +39,7 @@ export class CollectionGroupService {
     const { limit, page } = query;
     const take = limit || 10;
     const skip = ((page || 1) - 1) * take;
-    const [groups, total] = await this.collectionGroupRepository.findAndCount({
+    const [collectionGroups, total] = await this.collectionGroupRepository.findAndCount({
       where: {
         user: {
           id,
@@ -51,7 +51,7 @@ export class CollectionGroupService {
     const totalPages = Math.ceil(total / limit);
 
     return {
-      groups,
+      collectionGroups,
       total,
       totalPages,
     };
