@@ -1,9 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Configuration, OpenAIApi } from 'openai';
+import { MAX_TOKENS, countTokens } from './utils';
 
 @Injectable()
-export class TextPolisherService {
+export class AiService {
   private openAiIns: OpenAIApi;
 
   constructor(private configService: ConfigService) {
@@ -16,17 +17,19 @@ export class TextPolisherService {
   }
 
   async polishText(inputText: string) {
-    if (inputText.length > 1000) {
-      throw new BadRequestException('Input text is too long.');
+    const tokens = countTokens(inputText);
+    const isTokenOverLimit = tokens > MAX_TOKENS;
+    if (isTokenOverLimit) {
+      throw new BadRequestException('输入过长');
     }
-    const prompt = `请润色下面的文字: "${inputText}"`;
+    const prompt = `请帮我优化并提高以下这段文字的表达清晰度和质量，需要优化的文字为: "${inputText}"`;
     const response = await this.openAiIns.createCompletion({
       model: 'text-davinci-003',
       prompt: prompt,
-      max_tokens: inputText.length * 2,
+      max_tokens: tokens,
       n: 1,
       stop: null,
-      temperature: 0.6,
+      temperature: 0,
     });
 
     const polishedText = response.data.choices[0].text;

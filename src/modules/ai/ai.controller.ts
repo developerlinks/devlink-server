@@ -1,18 +1,18 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { TextPolisherService } from './text-polisher.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TextPolishDto } from './dto/text-polisher.dto';
+import { AiService } from './ai.service';
 
 @ApiTags('AI')
-@Controller('ai/text-polisher')
-export class TextPolisherController {
-  constructor(private readonly textPolisherService: TextPolisherService) {}
+@Controller('ai')
+export class AiController {
+  constructor(private readonly aiService: AiService) {}
 
   @ApiOperation({ summary: '文字润色' })
   @ApiBody({ description: '需要润色的文本', type: TextPolishDto })
   @ApiOkResponse({ description: '润色后的文本', type: String })
-  @Post()
+  @Post('/text-polisher')
   async textPolish(@Body('text') text: string) {
-    return this.textPolisherService.polishText(text);
+    return this.aiService.polishText(text);
   }
 }

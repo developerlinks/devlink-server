@@ -14,12 +14,12 @@ import { ConfigEnum } from './enum/config.enum';
 import { GroupModule } from './modules/group/group.module';
 import { TagModule } from './modules/tag/tag.module';
 import { CollectionGroupModule } from './modules/collection-group/collection-group.module';
-import { TextPolisherModule } from './modules/ai/text-polisher/text-polisher.module';
 import { StatusModule } from './modules/status/status.module';
 import { OssModule } from './modules/oss/oss.module';
 import { LikeModule } from './modules/like/like.module';
 import { FollowModule } from './modules/follow/follow.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { AiModule } from './modules/ai/ai.module';
 
 const envFilePath = `.env.${process.env.NODE_ENV || `development`}`;
 const schema = Joi.object({
@@ -86,7 +86,7 @@ const schema = Joi.object({
     AuthModule,
     GroupModule,
     MaterialModule,
-    TextPolisherModule,
+    AiModule,
     TagModule,
     CollectionGroupModule,
     StatusModule,

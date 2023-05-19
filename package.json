@@ -46,6 +46,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.3",
     "express-rate-limit": "^6.7.0",
+    "gpt3-tokenizer": "^1.1.5",
     "helmet": "^6.0.1",
     "ioredis": "^5.3.1",
     "joi": "^17.8.3",
