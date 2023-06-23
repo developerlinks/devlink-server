@@ -44,6 +44,16 @@ export class Profile {
   @Expose()
   description: string;
 
+  // github
+
+  @Column()
+  @Expose()
+  githubLogin: string;
+
+  @Column()
+  @Expose()
+  githubName: string;
+
   @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   @Expose()

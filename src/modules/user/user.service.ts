@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '../../entity/user.entity';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { Roles, RolesEnum } from 'src/entity/roles.entity';
 import * as argon2 from 'argon2';
 import { getUserDto } from './dto/get-user.dto';
@@ -33,14 +33,15 @@ export class UserService {
     private configService: ConfigService,
   ) {}
 
-  async create(user: Partial<User>) {
+  async create(user: DeepPartial<User>) {
+    const { username, email, password } = user;
     const role = await this.rolesRepository.findOne({ where: { id: RolesEnum.user } });
     user.roles = [role];
 
     // 重名检测
     const userByUsername = await this.userRepository.findOne({
       where: {
-        username: user.username,
+        username,
       },
     });
 
@@ -48,22 +49,30 @@ export class UserService {
       throw new ForbiddenException('用户名已存在');
     }
 
-    // 邮箱重复检测
-    const userByEmail = await this.userRepository.findOne({
-      where: {
-        email: user.email,
-      },
-    });
+    if (email) {
+      // 邮箱重复检测
+      const userByEmail = await this.userRepository.findOne({
+        where: {
+          email,
+        },
+      });
 
-    if (userByEmail) {
-      throw new ForbiddenException('邮箱已存在，可找回密码');
+      if (userByEmail) {
+        throw new ForbiddenException('邮箱已存在，可找回密码');
+      }
     }
 
     const userTmp = await this.userRepository.create(user);
-    userTmp.password = await argon2.hash(userTmp.password);
+    if (password) {
+      userTmp.password = await argon2.hash(userTmp.password);
+    }
     const group = new Group({ name: '默认分组', description: '默认分组' });
     const collectionGroup = new CollectionGroup({ name: '默认收藏夹', description: '默认收藏夹' });
-    const profile = new Profile({ gender: Gender.OTHER });
+    const userProfile = {
+      ...user.profile,
+      gender: Gender.OTHER,
+    } as Profile;
+    const profile = new Profile(userProfile);
     userTmp.group = [group];
     userTmp.collectedInGroups = [collectionGroup];
     userTmp.profile = profile;
@@ -109,6 +118,13 @@ export class UserService {
   findByEmail(email: string) {
     return this.userRepository.findOne({
       where: { email },
+      relations: ['roles', 'profile'],
+    });
+  }
+
+  findByGithubId(githubId: string) {
+    return this.userRepository.findOne({
+      where: { githubId },
       relations: ['roles', 'profile'],
     });
   }

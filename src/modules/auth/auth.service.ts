@@ -9,16 +9,18 @@ import { UserService } from 'src/modules/user/user.service';
 // import { getUserDto } from '../user/dto/get-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
-import { v4 as uuidv4 } from 'uuid';
 import { Profile } from 'src/entity/profile.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../entity/user.entity';
+import { AccountType, User } from '../../entity/user.entity';
 import { InjectRedis, Redis } from '@nestjs-modules/ioredis';
 import { SignupUserDto } from './dto/signup-user.dto';
 import { KickedOutTips } from 'src/constant';
 import { Device } from 'src/entity/device.entity';
 import { SignInByEmailAndCodeDto, SignInByEmailAndPassowrdDto } from './dto/signin-user.dto';
+import fetch from 'node-fetch';
+import { ConfigService } from '@nestjs/config';
+import { SignInByGithubAuthDto } from './dto/github-auth.dto';
 
 export interface JwtPayload {
   userId: string;
@@ -39,6 +41,7 @@ export class AuthService {
     @InjectRepository(Profile) private readonly profileRepository: Repository<Profile>,
     @InjectRepository(Device) private readonly deviceRepository: Repository<Device>,
     @InjectRedis() private readonly redis: Redis,
+    private configService: ConfigService,
   ) {}
 
   async signInByEmailAndPassword(dto: SignInByEmailAndPassowrdDto, req: Request) {
@@ -61,7 +64,7 @@ export class AuthService {
 
     await this.userRepository.save(user);
 
-    await this.storeAccessTokenInRedis(email, deviceId, accessToken);
+    await this.storeAccessTokenInRedis(user.id, deviceId, accessToken);
 
     return {
       user,
@@ -119,12 +122,17 @@ export class AuthService {
     }
   }
 
-  async storeAccessTokenInRedis(email: string, deviceId: string, accessToken: string) {
-    await this.redis.set(`${email}_${deviceId}_token`, accessToken, 'EX', jwtExpirationInSeconds);
+  async storeAccessTokenInRedis(userId: string, deviceId: string, accessToken: string) {
+    await this.redis.set(`${userId}_${deviceId}_token`, accessToken, 'EX', jwtExpirationInSeconds);
   }
 
-  async deleteAccessTokenInRedis(email: string, deviceId: string) {
-    await this.redis.set(`${email}_${deviceId}_token`, KickedOutTips, 'EX', jwtExpirationInSeconds);
+  async deleteAccessTokenInRedis(userId: string, deviceId: string) {
+    await this.redis.set(
+      `${userId}_${deviceId}_token`,
+      KickedOutTips,
+      'EX',
+      jwtExpirationInSeconds,
+    );
   }
 
   async signInByEmailAndCode(dto: SignInByEmailAndCodeDto, req: Request) {
@@ -148,7 +156,7 @@ export class AuthService {
 
     await this.updateOrCreateDevice(deviceId, deviceType, user, refreshToken, clientIp);
 
-    await this.storeAccessTokenInRedis(email, deviceId, accessToken);
+    await this.storeAccessTokenInRedis(user.id, deviceId, accessToken);
 
     return {
       accessToken,
@@ -268,5 +276,89 @@ export class AuthService {
       throw new NotFoundException('设备不存在');
     }
     await this.deleteAccessTokenInRedis(device.user.email, device.deviceId);
+  }
+
+  async githubAUth(dto: SignInByGithubAuthDto, req: Request) {
+    const { code, deviceId, deviceType } = dto;
+    const clientId = this.configService.get('GITHUB_CLIENT_ID');
+    const secret = this.configService.get('GITHUB_SECRET');
+    const clientIp = this.getClientIp(req);
+
+    try {
+      const accessToken = await this.getGithubToken(code, clientId, secret);
+      const userInfo = await this.getGithubUser(accessToken);
+      const { login, id, name } = userInfo;
+      // 去用户系统中查询该用户
+      let user = await this.userService.findByGithubId(userInfo.id);
+      if (!user) {
+        // 用户不存圮，则创廻用户
+        const findUserByGithubName = this.userService.find(userInfo.login);
+        const username = findUserByGithubName ? login + Date.now() : login;
+        user = await this.userService.create({
+          username,
+          githubId: id,
+          accountType: AccountType.GITHUB,
+          profile: {
+            githubLogin: login,
+            githubName: name,
+          },
+        });
+        await this.userRepository.save(user);
+      }
+      // 生成 accessToken 和 refreshToken
+      const { accessToken: newAccessToken, refreshToken } = await this.jwtToken(user, deviceId);
+
+      await this.updateOrCreateDevice(deviceId, deviceType, user, refreshToken, clientIp);
+
+      await this.storeAccessTokenInRedis(user.id, deviceId, newAccessToken);
+
+      // 将 refreshToken 存入数据完户登录
+      await this.updateOrCreateDevice(deviceId, deviceType, user, refreshToken, clientIp);
+      // 返回 accessToken 和 refreshToken
+      return {
+        user,
+        accessToken: newAccessToken,
+      };
+    } catch (error) {
+      console.info('github auth error', error);
+      throw new Error('github 授权失败');
+    }
+  }
+
+  async getGithubToken(code: string, clientId: string, clientSecret: string) {
+    const response = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        code,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get access token from GitHub');
+    }
+
+    const data = await response.json();
+
+    return data.access_token;
+  }
+
+  async getGithubUser(accessToken: string) {
+    const response = await fetch('https://api.github.com/user', {
+      headers: {
+        Authorization: `token ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get user info from GitHub');
+    }
+
+    return await response.json();
   }
 }

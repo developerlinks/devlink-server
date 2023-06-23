@@ -37,15 +37,19 @@ export class User {
   id: string = uuidv4();
 
   @ApiProperty()
+  @Column({ unique: true, nullable: true })
+  githubId: string;
+
+  @ApiProperty()
   @Column({ unique: true })
   username: string;
 
   @ApiProperty()
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   email: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ nullable: true })
   @Exclude()
   password: string;
 

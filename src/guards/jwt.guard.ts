@@ -30,9 +30,10 @@ export class JwtGuard extends AuthGuard('jwt') {
       }
       throw error;
     }
-    const { email, deviceId } = payload as JwtPayload;
-    const tokenCache = email ? await this.redis.get(`${email}_${deviceId}_token`) : null;
-    if (!payload || !email || tokenCache !== token) {
+    const { userId, deviceId } = payload as JwtPayload;
+    const tokenCache = userId ? await this.redis.get(`${userId}_${deviceId}_token`) : null;
+
+    if (!payload || !userId || tokenCache !== token) {
       throw new UnauthorizedException(TokenExpiredMessage);
     } else if (tokenCache === 'kickedout') {
       throw new UnauthorizedException('您的设备被强制下线，请重新登录');

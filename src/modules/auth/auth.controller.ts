@@ -31,6 +31,7 @@ import { SignupUserDto } from './dto/signup-user.dto';
 import { SendCodeDto } from 'src/modules/mail/dto/send-code.dto';
 import { JwtGuard } from 'src/guards/jwt.guard';
 import { TokenExpiredMessage } from 'src/constant';
+import { SignInByGithubAuthDto } from './dto/github-auth.dto';
 
 @ApiTags('用户验证')
 @Controller('auth')
@@ -124,5 +125,11 @@ export class AuthController {
     const { userId } = req.user as JwtPayload;
 
     return await this.authService.forceLogoutDevice(userId, deviceId);
+  }
+
+  @ApiOperation({ summary: 'github 授权' })
+  @Post('github')
+  async githubaAuth(@Body() dto: SignInByGithubAuthDto, @Req() req) {
+    return await this.authService.githubAUth(dto, req);
   }
 }
