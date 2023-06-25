@@ -297,7 +297,7 @@ export class AuthService {
       if (!user) {
         // 用户不存圮，则创廻用户
         const findUserByGithubName = this.userService.find(userInfo.login);
-        const username = findUserByGithubName ? login + Date.now() : login;
+        const username = !!(await findUserByGithubName).id ? login + Date.now() : login;
         user = await this.userService.create({
           username,
           githubId: id,

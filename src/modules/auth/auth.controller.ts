@@ -78,13 +78,13 @@ export class AuthController {
   @ApiOperation({ summary: '退出登录' })
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  @Get('/logout')
-  async logout(@Req() req) {
+  @Post('/logout')
+  async logout(@Req() req, @Body('deviceId') deviceId: string) {
     if (!req.user.userId) {
       throw new UnauthorizedException(TokenExpiredMessage);
     }
-    const { email } = req.user;
-    return await this.redis.del(`${email}_token`);
+    const { userId } = req.user;
+    return await this.redis.del(`${userId}_${deviceId}_token`);
   }
 
   @ApiOperation({ summary: '注册' })
