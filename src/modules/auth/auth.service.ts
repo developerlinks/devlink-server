@@ -34,6 +34,8 @@ const jwtRefreshExpirationInSeconds = 180 * 24 * 60 * 60;
 
 @Injectable()
 export class AuthService {
+  private proxyUrl: string;
+
   constructor(
     private userService: UserService,
     private jwt: JwtService,
@@ -42,7 +44,9 @@ export class AuthService {
     @InjectRepository(Device) private readonly deviceRepository: Repository<Device>,
     @InjectRedis() private readonly redis: Redis,
     private configService: ConfigService,
-  ) {}
+  ) {
+    this.proxyUrl = this.configService.get('PROXY_URL');
+  }
 
   async signInByEmailAndPassword(dto: SignInByEmailAndPassowrdDto, req: Request) {
     const clientIp = this.getClientIp(req);
@@ -326,7 +330,7 @@ export class AuthService {
   }
 
   async getGithubToken(code: string, clientId: string, clientSecret: string) {
-    const response = await fetch('https://github.com/login/oauth/access_token', {
+    const response = await fetch(`${this.proxyUrl}https://github.com/login/oauth/access_token`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -349,7 +353,7 @@ export class AuthService {
   }
 
   async getGithubUser(accessToken: string) {
-    const response = await fetch('https://api.github.com/user', {
+    const response = await fetch(`${this.proxyUrl}https://api.github.com/user`, {
       headers: {
         Authorization: `token ${accessToken}`,
       },
