@@ -330,7 +330,7 @@ export class AuthService {
   }
 
   async getGithubToken(code: string, clientId: string, clientSecret: string) {
-    const response = await fetch(`${this.proxyUrl}https://github.com/login/oauth/access_token`, {
+    const response = await fetch(`${this.proxyUrl}/github.com/login/oauth/access_token`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -353,7 +353,7 @@ export class AuthService {
   }
 
   async getGithubUser(accessToken: string) {
-    const response = await fetch(`${this.proxyUrl}https://api.github.com/user`, {
+    const response = await fetch(`${this.proxyUrl}/api.github.com/user`, {
       headers: {
         Authorization: `token ${accessToken}`,
       },
