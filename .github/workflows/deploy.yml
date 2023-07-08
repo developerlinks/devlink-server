@@ -41,5 +41,6 @@ jobs:
           SCRIPT_AFTER: |
             whoami
             ls -al
+            cd /home/ubuntu/app/devlink/devlink-server
             /home/ubuntu/.nvm/versions/node/v16.20.0/bin/pm2 restart ecosystem.config.js
 
