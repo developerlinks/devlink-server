@@ -34,7 +34,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.SERVER_HOST }}
           REMOTE_USER: ${{ secrets.SERVER_USERNAME }}
           TARGET: "/home/ubuntu/app/devlink/devlink-server/dist/"
-          EXCLUDE: ".env, /node_modules/, ecosystem.config.js"
+          EXCLUDE: "/dist/, /node_modules/"
           SCRIPT_AFTER: |
             whoami
             cd /home/ubuntu/app/devlink/devlink-server/
