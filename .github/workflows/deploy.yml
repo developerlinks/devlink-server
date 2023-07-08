@@ -34,6 +34,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.SERVER_HOST }}
           REMOTE_USER: ${{ secrets.SERVER_USERNAME }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
+          EXCLUDE: ".env, /node_modules/, ecosystem.config.js"
           SCRIPT_AFTER: |
             whoami
             ls -al
