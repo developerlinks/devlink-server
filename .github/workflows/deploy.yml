@@ -23,7 +23,7 @@ jobs:
       run: npm install -g pnpm && pnpm install
 
     - name: build
-      run: pnpm run build
+      run: pnpm run build && ls
 
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
@@ -33,7 +33,7 @@ jobs:
           SOURCE: "dist/"
           REMOTE_HOST: ${{ secrets.SERVER_HOST }}
           REMOTE_USER: ${{ secrets.SERVER_USERNAME }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}
+          TARGET: "/home/ubuntu/app/devlink/devlink-server/"
           EXCLUDE: ".env, /node_modules/, ecosystem.config.js"
           SCRIPT_AFTER: |
             whoami
@@ -41,5 +41,5 @@ jobs:
             ls -al
             pwd
             echo "devlink-server restart"
-            /home/ubuntu/.nvm/versions/node/v16.20.0/bin/pm2 restart /home/ubuntu/app/devlink/devlink-server/ecosystem.config.js
+            /home/ubuntu/.nvm/versions/node/v16.20.0/bin/pm2 restart ecosystem.config.js
 
