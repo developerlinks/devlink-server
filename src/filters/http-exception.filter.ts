@@ -22,6 +22,5 @@ export class HttpExceptionFilter implements ExceptionFilter {
       body: request.body,
       params: request.params,
     });
-    // throw new Error('Method not implemented.');
   }
 }

@@ -29,15 +29,14 @@ export class AllExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest();
     const response = ctx.getResponse();
 
+    const exceptionStatus = exception.getStatus();
+
     const httpStatus =
-      exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+      exception instanceof HttpException ? exceptionStatus : HttpStatus.INTERNAL_SERVER_ERROR;
     this.logger.error(exception.message, exception.stack);
     const msg: unknown = exception['response'] || '网络错误';
     const responseBody = {
       timestamp: new Date().toISOString(),
-      // headers: request.headers,
-      // query: request.query,
-      // ip: requestIp.getClientIp(request),
       body: request.body,
       params: request.params,
       status: httpStatus,
@@ -47,12 +46,12 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     const isProd = process.env.NODE_ENV === 'production';
 
-    if (isProd) {
+    if (isProd && exceptionStatus >= 500) {
       // statuspage
       const now = new Date();
       const timeDiffInHours = (now.getTime() - this.lastStatusUpdateTime.getTime()) / 1000 / 3600;
 
-      if (timeDiffInHours >= 24 && httpStatus === HttpStatus.INTERNAL_SERVER_ERROR) {
+      if (timeDiffInHours >= 24) {
         const componentId = this.configService.get(ConfigEnum.COMPONENT_ID);
         const pageId = this.configService.get(ConfigEnum.PAGE_ID);
         const statusApiKey = this.configService.get(ConfigEnum.STATUSPAGE_API_KEY);
@@ -61,7 +60,6 @@ export class AllExceptionFilter implements ExceptionFilter {
 
         this.statusService.updateComponentStatus(componentId, status, pageId, statusApiKey);
         this.lastStatusUpdateTime = now;
-        // TODO: 发送邮件给管理员
       }
     }
 
