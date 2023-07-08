@@ -34,13 +34,10 @@ jobs:
           REMOTE_HOST: ${{ secrets.SERVER_HOST }}
           REMOTE_USER: ${{ secrets.SERVER_USERNAME }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
-          EXCLUDE: "/dist/, /node_modules/"
-          SCRIPT_BEFORE: |
-            whoami
-            ls -al
           SCRIPT_AFTER: |
             whoami
             ls -al
-            cd /home/ubuntu/app/devlink/devlink-server
-            /home/ubuntu/.nvm/versions/node/v16.20.0/bin/pm2 restart ecosystem.config.js
+            pwd
+            echo "devlink-server restart"
+            /home/ubuntu/.nvm/versions/node/v16.20.0/bin/pm2 /home/ubuntu/app/devlink/devlink-server/restart ecosystem.config.js
 
