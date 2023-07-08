@@ -37,8 +37,9 @@ jobs:
           EXCLUDE: ".env, /node_modules/, ecosystem.config.js"
           SCRIPT_AFTER: |
             whoami
+            cd /home/ubuntu/app/devlink/devlink-server/
             ls -al
             pwd
             echo "devlink-server restart"
-            /home/ubuntu/.nvm/versions/node/v16.20.0/bin/pm2 /home/ubuntu/app/devlink/devlink-server/restart ecosystem.config.js
+            /home/ubuntu/.nvm/versions/node/v16.20.0/bin/pm2 restart /home/ubuntu/app/devlink/devlink-server/ecosystem.config.js
 
