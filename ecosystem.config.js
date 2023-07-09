@@ -2,9 +2,10 @@ module.exports = {
   apps: [
     {
       name: 'devlink-server',
-      script: './dist/src/main.js',
+      script: 'npm',
+      args: 'run start:prod',
       env: {
-        NODE_ENV: process.env.NODE_ENV || 'production',
+        NODE_ENV: 'production',
       },
     },
   ],
