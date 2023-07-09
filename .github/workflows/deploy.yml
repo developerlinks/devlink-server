@@ -20,10 +20,10 @@ jobs:
         node-version: 16
 
     - name: install dependencies
-      run: npm install
+      run: npm install -g pnpm && pnpm install
 
     - name: build
-      run: npm run build && ls
+      run: pnpm run build && ls
 
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
