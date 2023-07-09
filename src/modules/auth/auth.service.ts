@@ -163,6 +163,7 @@ export class AuthService {
     await this.storeAccessTokenInRedis(user.id, deviceId, accessToken);
 
     return {
+      user,
       accessToken,
       refreshToken,
     };

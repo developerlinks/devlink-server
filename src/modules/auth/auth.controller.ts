@@ -61,8 +61,12 @@ export class AuthController {
   @ApiOperation({ summary: '邮箱&验证码 登录' })
   @Post('/signin_by_code')
   async signInByEmailAndcode(@Body() dto: SignInByEmailAndCodeDto, @Req() req: Request) {
-    const { accessToken, refreshToken } = await this.authService.signInByEmailAndCode(dto, req);
+    const { user, accessToken, refreshToken } = await this.authService.signInByEmailAndCode(
+      dto,
+      req,
+    );
     return {
+      user,
       accessToken,
       refreshToken,
     };

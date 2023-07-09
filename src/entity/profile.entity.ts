@@ -36,21 +36,19 @@ export class Profile {
   @Column({ nullable: true })
   photo: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Expose()
   address: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Expose()
   description: string;
 
-  // github
-
-  @Column()
+  @Column({ nullable: true })
   @Expose()
   githubLogin: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Expose()
   githubName: string;
 
