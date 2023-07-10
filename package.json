@@ -1,7 +1,7 @@
 {
   "name": "devlink-server",
   "version": "0.0.1",
-  "description": "developer links server",
+  "description": "devlink server",
   "author": "bowling",
   "private": true,
   "license": "UNLICENSED",
