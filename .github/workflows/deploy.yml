@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - ci
 
 jobs:
   deploy:
@@ -28,7 +28,7 @@ jobs:
           NODE_ENV: production
 
       - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@main
+        uses: easingthemes/ssh-deploy@v4.1.0
         env:
             SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
             ARGS: "-rlgoDzvc -i --delete"
@@ -43,4 +43,4 @@ jobs:
               ls -al
               pwd
               echo "devlink-server restart"
-              sh deploy.sh
+              /home/ubuntu/.nvm/versions/node/v18.16.1/bin/pm2 restart ecosystem.config.js
