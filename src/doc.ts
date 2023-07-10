@@ -3,7 +3,7 @@ import * as packageConfig from '../package.json';
 
 export const generateDocument = app => {
   const options = new DocumentBuilder()
-    .setTitle(packageConfig.name)
+    .setTitle(packageConfig.name + '-doc')
     .setDescription(packageConfig.description)
     .setVersion(packageConfig.version)
     .addBearerAuth()
