@@ -4,8 +4,7 @@ module.exports = {
       name: 'devlink-server',
       script: 'npm',
       args: 'run start:prod',
-      watch: ['./dist'],
-      ignore_watch : ["node_modules"],
+      interpreter: "/home/ubuntu/.nvm/versions/node/v18.16.1/bin/node",
     },
   ],
 };

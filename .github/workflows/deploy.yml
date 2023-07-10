@@ -43,5 +43,4 @@ jobs:
               ls -al
               pwd
               echo "devlink-server restart"
-              sleep 10
               sh deploy.sh
