@@ -41,4 +41,4 @@ jobs:
             ls -al
             pwd
             echo "devlink-server restart"
-            /home/ubuntu/.nvm/versions/node/v16.20.0/bin/pm2 restart ecosystem.config.js
+            /home/ubuntu/.nvm/versions/node/v18.16.1/bin/pm2 restart ecosystem.config.js
