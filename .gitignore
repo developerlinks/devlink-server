@@ -44,3 +44,5 @@ test.*
 redis.conf
 
 mysql-data
+
+docker-compose.yml
