@@ -21,6 +21,7 @@ import { SignInByEmailAndCodeDto, SignInByEmailAndPassowrdDto } from './dto/sign
 import fetch from 'node-fetch';
 import { ConfigService } from '@nestjs/config';
 import { SignInByGithubAuthDto } from './dto/github-auth.dto';
+import { generateHash } from 'src/utils';
 
 export interface JwtPayload {
   userId: string;
@@ -294,11 +295,12 @@ export class AuthService {
       const userInfo = await this.getGithubUser(accessToken);
       const { login, id, name } = userInfo;
       // 去用户系统中查询该用户
-      let user = await this.userService.findByGithubId(userInfo.id);
+      let user = await this.userService.findByGithubId(id);
       if (!user) {
         // 用户不存圮，则创廻用户
-        const findUserByGithubName = this.userService.find(userInfo.login);
-        const username = !!(await findUserByGithubName).id ? login + Date.now() : login;
+        const findUserByGithubName = this.userService.find(login);
+        const hash = generateHash(login).substring(0, 5);
+        const username = !!(await findUserByGithubName).id ? login + hash : login;
         user = await this.userService.create({
           username,
           githubId: id,
@@ -343,7 +345,6 @@ export class AuthService {
         code,
       }),
     });
-
     if (!response.ok) {
       throw new Error('Failed to get access token from GitHub');
     }

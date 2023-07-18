@@ -29,10 +29,8 @@ export class AllExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest();
     const response = ctx.getResponse();
 
-    const exceptionStatus = exception.getStatus();
-
     const httpStatus =
-      exception instanceof HttpException ? exceptionStatus : HttpStatus.INTERNAL_SERVER_ERROR;
+      exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
     this.logger.error(exception.message, exception.stack);
     const msg: unknown = exception['response'] || '网络错误';
     const responseBody = {
@@ -45,8 +43,8 @@ export class AllExceptionFilter implements ExceptionFilter {
     };
 
     const isProd = process.env.NODE_ENV === 'production';
-
-    if (isProd && exceptionStatus >= 500) {
+    const httpError = exception instanceof HttpException && exception.getStatus() >= 500;
+    if (isProd && httpError) {
       // statuspage
       const now = new Date();
       const timeDiffInHours = (now.getTime() - this.lastStatusUpdateTime.getTime()) / 1000 / 3600;
